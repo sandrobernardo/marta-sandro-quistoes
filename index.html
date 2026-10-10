@@ -235,6 +235,16 @@ document.getElementById("exportAll").addEventListener("click",()=>download("copi
 document.getElementById("importFile").addEventListener("change",async e=>{try{stateNew=JSON.parse(await e.target.files[0].text());Object.assign(state,stateNew);save();renderFlights();renderBookingEditor();renderExpenses();document.getElementById("tourNotes").value=state.tourNotes||"";alert("Cópia importada.")}catch(err){alert("Não foi possível ler este ficheiro.")}});
 document.getElementById("tourNotes").value=state.tourNotes;
 document.getElementById("saveNotes").addEventListener("click",()=>{state.tourNotes=document.getElementById("tourNotes").value;save();alert("Notas guardadas.")});
-renderDays();renderPlaces();renderStays();renderFood();renderTransport();renderFlights();renderBookingEditor();renderExpenses();updateFx();
+function safeRender(label,fn){try{fn()}catch(err){console.error("Erro ao carregar "+label,err);const target=document.getElementById(label==="Hoje"?"todayCard":label==="Dia a dia"?"dayList":label==="Alojamentos"?"stayList":label==="O que visitar"?"placeList":label==="Onde comer"?"foodList":label==="Transportes"?"transportList":null);if(target)target.innerHTML='<div class="warn">Esta secção não conseguiu carregar. Actualiza a página no Safari e tenta novamente.</div>';}}
+safeRender("Dia a dia",()=>renderDays());
+safeRender("Hoje",()=>renderToday());
+safeRender("O que visitar",()=>renderPlaces());
+safeRender("Alojamentos",()=>renderStays());
+safeRender("Onde comer",()=>renderFood());
+safeRender("Transportes",()=>renderTransport());
+safeRender("Voos",()=>renderFlights());
+safeRender("Reservas",()=>renderBookingEditor());
+safeRender("Despesas",()=>renderExpenses());
+safeRender("Câmbio",()=>updateFx());
 </script><!-- Versão pública: códigos de confirmação e PIN de reservas removidos. -->
 </body></html>
