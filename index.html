@@ -34,7 +34,7 @@ label{display:block;color:var(--muted);font-size:12px;margin:10px 0 4px}input,se
 <div class="countdown-panel" aria-live="polite"><div class="countdown-label">A contagem decrescente já começou</div><div class="countdown-values"><div><strong id="countDays">--</strong><span>dias</span></div><div class="countdown-separator">:</div><div><strong id="countHours">--</strong><span>horas</span></div></div><p id="countdownCaption">Até partirmos, a 23 de outubro.</p></div>
 <div class="statrow"><div class="stat"><span>Duração</span><strong>16 dias</strong></div><div class="stat"><span>Países</span><strong>3</strong></div><div class="stat"><span>Moedas locais</span><strong>TMT · UZS · KGS</strong></div></div>
 <div class="cards">
-<div class="card"><div class="cover" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Turkmenistan_-_Yangykala_Canyon.jpg')"></div><div class="card-body"><div class="kicker">23–27 outubro</div><h3>Turquemenistão</h3><p class="muted">Ashgabat, Yangykala, Merv e Darvaza. O programa final da tour será integrado quando chegar.</p><button class="btn dark" onclick="go('days')">Ver dias</button></div></div>
+<div class="card"><div class="cover" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Turkmenistan_-_Yangykala_Canyon.jpg')"></div><div class="card-body"><div class="kicker">23–29 outubro</div><h3>Turquemenistão</h3><p class="muted">Tour TM Tour: Ashgabat, comboios nocturnos para Türkmenbaşy, Yangykala, Merv, Sport Hotel, Darvaza e saída pela fronteira de Shavat.</p><button class="btn dark" onclick="go('days')">Ver dias</button></div></div>
 <div class="card"><div class="cover" style="background-image:url('https://upload.wikimedia.org/wikipedia/commons/1/13/Registan_Samarkand.jpg')"></div><div class="card-body"><div class="kicker">27–31 outubro</div><h3>Uzbequistão</h3><p class="muted">Khiva, Bukhara, Samarcanda e Tashkent — cidades, mercados e arquitectura da Rota da Seda.</p><button class="btn dark" onclick="go('places')">Explorar cidades</button></div></div>
 <div class="card"><div class="cover" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Song-K%C3%B6l.jpg')"></div><div class="card-body"><div class="kicker">31 outubro–7 novembro</div><h3>Quirguistão</h3><p class="muted">Bishkek, Ala-Archa e Song-Kul. Temperaturas baixas e estradas de montanha a confirmar.</p><button class="btn dark" onclick="go('days')">Ver roteiro</button></div></div>
 <div class="card full"><div class="card-body"><h3>Antes de partir</h3><div class="notice">Os dados de voos e comboios foram transcritos do Excel. Os horários, os nomes comerciais e os localizadores devem ser comparados com os bilhetes originais. As temperaturas são médias sazonais indicativas, não previsões diárias confirmadas.</div><div class="actions"><button class="btn gold" onclick="go('notes')">Completar localizadores</button><button class="btn" onclick="go('money')">Abrir despesas</button></div></div></div>
@@ -61,31 +61,34 @@ label{display:block;color:var(--muted);font-size:12px;margin:10px 0 4px}input,se
 <script>
 const FX={EUR:1,TMT:3.5,UZS:13336,KGS:98,USD:1.09}; // indicative reference values, editable in future
 const days=[
-{date:"Sex. · 23 out.",place:"Lisboa → Istambul → Ashgabat",country:"Turquemenistão",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Turkmenistan-Ashgabat.jpg",weather:"Ashgabat: estimativa sazonal, não previsão",events:[
-["05h55–12h40","Voo TK1780 · Lisboa (LIS) → Istambul (IST)","Horário transcrito do Excel; confirmar no bilhete e no Flightradar24."],
-["14h15–19h50","Voo TK320 · Istambul (IST) → Ashgabat (ASB)","Horário transcrito do Excel; confirmar hora local, terminal e bagagem."],
-["Noite","Ashgabat","O Excel não identifica alojamento para esta noite; confirmar com a agência da tour."]]},
-{date:"Sáb. · 24 out.",place:"Ashgabat",country:"Turquemenistão",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Turkmenistan-Ashgabat.jpg",weather:"Estimativa sazonal; consultar previsão perto da data",events:[
-["Durante o dia","Visitas em Ashgabat com a tour","A ordem e os locais dependem do programa contratado. Não inventei um horário de visitas."],
-["Noite","Alojamento em Ashgabat","A folha Excel assinala Ashgabat; nome e morada por confirmar."]]},
-{date:"Dom. · 25 out.",place:"Ashgabat → Yangykala",country:"Turquemenistão",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Turkmenistan_-_Yangykala_Canyon.jpg",weather:"Estimativa sazonal; noites frias",events:[
-["Durante o dia","Deslocação e visita a Yangykala","Percurso longo; confirmar com a tour a duração, paragens e se a visita é ao pôr do sol."],
-["Noite","Alojamento previsto pela tour","A folha Excel não esclarece o alojamento desta noite. Confirmar no programa da agência."]]},
-{date:"Seg. · 26 out.",place:"Yangykala → Merv",country:"Turquemenistão",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Merv_Turkmenistan.jpg",weather:"Estimativa sazonal; consultar previsão perto da data",events:[
-["Durante o dia","Merv — parque arqueológico","Confirmar com a agência a hora de chegada e quais as ruínas incluídas (por exemplo, mausoléu do Sultão Sanjar)."],
-["Noite","Merv / Mary","O Excel indica Merv como alojamento, mas não contém nome ou morada."]]},
-{date:"Ter. · 27 out.",place:"Merv → Ashgabat",country:"Turquemenistão",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Turkmenistan-Ashgabat.jpg",weather:"Estimativa sazonal; consultar previsão perto da data",events:[
-["Durante o dia","Regresso / visitas em Ashgabat","O Excel coloca Ashgabat neste dia. Confirmar com a tour a ordem e o tempo disponível."],
-["Noite","Ashgabat","Alojamento a confirmar com a agência."]]},
-{date:"Qua. · 28 out.",place:"Ashgabat → Darvaza",country:"Turquemenistão",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Turkmenistan_gas_crater.jpg",weather:"Deserto: grande amplitude térmica; previsão por confirmar",events:[
-["Durante o dia","Deslocação para a cratera de Darvaza","Confirmar hora de saída, duração da viagem e paragens com a agência."],
-["Fim da tarde/noite","Cratera de gás de Darvaza","Levar roupa quente: a temperatura no deserto pode descer bastante à noite."],
-["Noite","Yurtas no deserto","O Excel indica “Yurts”; nome do camp, morada, refeições e instalações por confirmar."]]},
-{date:"Qui. · 29 out.",place:"Shavat → Khiva",country:"Uzbequistão",img:"https://image.popbela.com/post/20241121/axp-photography-tgjoyu6h9ny-unsplash-aa9fadc5275967334006c45e77701175-ea16e4bc07529f09836e9c315678004e.jpg",weather:"Khiva: estimativa sazonal; previsão por confirmar",events:[
-["Manhã / hora a confirmar","Fronteira de Shavat","Este é o primeiro dia no Uzbequistão, conforme a folha Excel. Confirmar com a tour hora de chegada à fronteira, documentação e transporte."],
-["Depois da fronteira","Shavat → Khiva","O Excel sugere marshrutka/minibus desde Shavat ou via Urgench. Confirmar a paragem exacta, horário, preço e destino com informação local actualizada."],
-["Fim da tarde","Itchan Kala — passeio de orientação","Se a chegada permitir: entrar na cidade muralhada e percorrer as ruas principais. Deixar os monumentos interiores para a manhã seguinte se chegarem tarde."],
-["Noite","Alojamento em Khiva","Shaherezada Boutique Hotel · 75 USD. Reserva confirmada; ver morada e detalhes na secção Alojamentos."]]},
+{date:"Sex. · 23 out.",place:"Lisboa → Istambul → Ashgabat",country:"Turquemenistão",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Turkmenistan-Ashgabat.jpg",weather:"Ashgabat: estimativa sazonal; previsão por confirmar",events:[
+["05h55–12h40","Voo TK1780 · Lisboa (LIS) → Istambul (IST)","Horário indicado no itinerário; confirmar no bilhete."],
+["14h15–19h50","Voo TK320 · Istambul (IST) → Ashgabat (ASB)","Chegada prevista às 19h50. Confirmar horas locais e bilhete."],
+["Noite","Alojamento em Ashgabat — por definir","Ainda não foi identificado alojamento para esta primeira noite. O Sport Hotel é a reserva confirmada para a noite de 27 de outubro, durante a tour."]]},
+{date:"Sáb. · 24 out.",place:"Ashgabat → Türkmenbaşy",country:"Turquemenistão",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Turkmenistan-Ashgabat.jpg",weather:"Estimativa sazonal; confirmar perto da data",events:[
+["Manhã / dia","Ashgabat — início da tour","O programa da agência prevê visita à capital: Parque da Independência, Arco da Neutralidade, Wedding Palace, Centro Alem e Museu Nacional. Como o voo chega na noite anterior, confirmar com a agência a hora real de início e a ordem das visitas."],
+["Noite","Comboio nocturno para Türkmenbaşy","Viagem indicada pela TM Tour, cerca de 14 horas. Confirmar bilhetes, hora de partida e classe com o operador."]]},
+{date:"Dom. · 25 out.",place:"Türkmenbaşy → Yangykala → Türkmenbaşy",country:"Turquemenistão",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Turkmenistan_-_Yangykala_Canyon.jpg",weather:"Desfiladeiros: vento e noites frias possíveis",events:[
+["Manhã","Chegada a Türkmenbaşy e viagem para Yangykala","A proposta indica cerca de 4 horas de carro por trajecto."],
+["Durante o dia","Desfiladeiros de Yangykala","Visita aos miradouros e formações rochosas coloridas, conforme condições locais."],
+["19h00 (indicado na proposta)","Comboio nocturno de regresso a Ashgabat","Confirmar horário e bilhetes com a agência."]]},
+{date:"Seg. · 26 out.",place:"Ashgabat → Merv → Mary",country:"Turquemenistão",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Merv_Turkmenistan.jpg",weather:"Estimativa sazonal; previsão por confirmar",events:[
+["Manhã","Viagem de Ashgabat para Merv","A proposta indica cerca de 3h30 de carro."],
+["Durante o dia","Antiga Merv","Visita ao sítio arqueológico, incluindo o Mausoléu do Sultão Sanjar, fortalezas Kyz Kala e muralhas, conforme o programa."],
+["Noite","Alojamento em Mary","A proposta prevê pernoita em Mary. O nome e a morada do hotel não estão indicados no documento."]]},
+{date:"Ter. · 27 out.",place:"Mary → Ashgabat",country:"Turquemenistão",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Turkmenistan-Ashgabat.jpg",weather:"Estimativa sazonal; confirmar perto da data",events:[
+["Manhã","Regresso de Mary a Ashgabat","A proposta indica cerca de 3h30 de carro."],
+["Tarde","Nisa, Monumento da Constituição e bazar Tolkuchka","Visitas previstas no itinerário da TM Tour; a ordem depende do tempo disponível."],
+["Noite","Sport Hotel, Ashgabat","Reserva confirmada. Hotel de 4 estrelas, seleccionado na proposta da TM Tour. Confirmar com a agência se esta é a noite exacta da reserva."]]},
+{date:"Qua. · 28 out.",place:"Ashgabat → Darvaza",country:"Turquemenistão",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Turkmenistan_gas_crater.jpg",weather:"Deserto: noites frias possíveis; previsão por confirmar",events:[
+["Durante o dia","Viagem pelo deserto de Karakum","A proposta indica cerca de 4 horas de carro, com possíveis paragens em aldeias."],
+["Fim da tarde/noite","Cratera de gás de Darvaza","Ver a cratera ao pôr do sol e depois de escurecer. A proposta inclui jantar BBQ."],
+["Noite","Acampamento de yurts em Darvaza","Alojamento previsto no pacote. Confirmar instalações, roupa de cama e condições para o frio."]]},
+{date:"Qui. · 29 out.",place:"Darvaza → fronteira de Shavat → Khiva",country:"Turquemenistão",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Turkmenistan_-_Yangykala_Canyon.jpg",weather:"Deserto e Khiva: previsão por confirmar",events:[
+["Manhã","Última visita à cratera durante o dia","Conforme o programa da TM Tour."],
+["Durante o dia","Viagem para a fronteira de Shavat","A proposta indica 5–6 horas e avisa que parte da estrada está em más condições."],
+["Depois da fronteira","Entrada no Uzbequistão e deslocação para Khiva","Confirmar com a agência a hora de passagem da fronteira e o transporte até Khiva."],
+["Noite","Shaherezada Boutique Hotel, Khiva","Reserva confirmada para 29–30 de outubro. Ver morada e detalhes na secção Alojamentos."]]},
 {date:"Sex. · 30 out.",place:"Khiva → Bukhara",country:"Uzbequistão",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Kalyan_minaret%2C_Bukhara.jpg",weather:"Khiva/Bukhara: estimativa sazonal; previsão por confirmar",events:[
 ["07h10–10h38","Comboio Khiva → Bukhara","Excel: 332 000 UZS. Horário e preço são dados do Excel, não confirmação de bilhete. Comprar/confirmar em https://eticket.railway.uz/en/."],
 ["Após chegada","Estação → alojamento / bagagem","Confirmar estação de chegada e se o alojamento guarda bagagem antes do check-in."],
@@ -145,7 +148,9 @@ const places=[
 ["Song-Kul","Lago Song-Kul","Lago alpino e pastagens; em novembro o acesso e as yurtas podem estar fechados.","https://commons.wikimedia.org/wiki/Special:FilePath/Song-K%C3%B6l.jpg"]
 ];
 const stays=[
-{city:"Turquemenistão",name:"Alojamentos incluídos na tour",url:"",dates:"23–28 out. · conforme programa da agência",price:"Incluído no pacote de 960 € (confirmar âmbito)",address:"A confirmar no voucher da agência",map:"Ashgabat Turkmenistan",note:"O Excel não contém nomes nem moradas individuais para estas noites."},
+{city:"Ashgabat",name:"Alojamento da primeira noite — por definir",url:"",dates:"23–24 outubro · 1 noite",price:"Por confirmar",address:"Morada por confirmar",map:"Ashgabat Turkmenistan",note:"Ainda não foi escolhido/identificado alojamento para a noite de chegada, 23 de outubro. Não confundir com o Sport Hotel, reservado para a tour."},
+{city:"Ashgabat",name:"Sport Hotel",url:"",dates:"27–28 outubro · 1 noite prevista no programa",price:"Incluído no pacote da tour",address:"Ashgabat, Turquemenistão — morada exacta por confirmar",map:"Sport Hotel Ashgabat Turkmenistan",phone:"",checkin:"27 out. · hora a confirmar",checkout:"28 out. · hora a confirmar",payment:"Hotel de 4 estrelas seleccionado na proposta da TM Tour.",note:"Reserva confirmada pelo utilizador. Confirmar com a agência que as datas da reserva correspondem à noite de 27 para 28 de outubro."},
+{city:"Turquemenistão",name:"Outros alojamentos incluídos na tour",url:"",dates:"24–29 out. · conforme programa da agência",price:"Incluído no pacote da tour",address:"A confirmar no voucher da agência",map:"Turkmenistan",note:"A proposta prevê comboios nocturnos, alojamento em Mary e yurts em Darvaza; os nomes e moradas desses alojamentos não constam no PDF."},
 {city:"Khiva",name:"Shaherezada Boutique Hotel",url:"https://www.booking.com/Share-xJFPAWM",dates:"29–30 outubro · 1 noite",price:"75,00 USD · total da reserva",address:"Islom Hodja 35, 600200 Khiva, Uzbequistão",map:"Shaherezada Boutique Hotel, Islom Hodja 35, Khiva",phone:"+998 90 997 82 38",checkin:"29 out. a partir das 14:00",checkout:"30 out. até às 12:00",payment:"Pagamento no alojamento em UZS; pequeno-almoço incluído.",note:"Reserva confirmada. Cancelamento gratuito até 27 de outubro às 23:59 (+05)."},
 {city:"Bucara",name:"Mehtar Anbar Historical CARAVANSARAY XIX Century",url:"",dates:"30–31 outubro · 1 noite",price:"40,60 USD · total da reserva",address:"Khakikat Str., Buxoro, 200118 Bucara, Uzbequistão",map:"Mehtar Anbar Historical CARAVANSARAY XIX Century, Khakikat Str, Bukhara",phone:"+998 91 901 09 11",checkin:"30 out. entre as 13:00 e 00:00",checkout:"31 out. até às 11:00",payment:"Pagamento conforme confirmação; pequeno-almoço incluído.",note:"Reserva confirmada. Cancelamento gratuito até às 18:00 do dia 30 de outubro."},
 {city:"Samarcanda",name:"Hotel Grand Marakand",url:"",dates:"31 outubro–1 novembro · 1 noite",price:"46,46 USD · total da reserva",address:"Iskandarova 70, 140100 Samarcanda, Uzbequistão",map:"Hotel Grand Marakand, Iskandarova 70, Samarkand",phone:"+998 93 355 33 99",checkin:"31 out. entre as 14:00 e 00:00",checkout:"1 nov. até às 11:00",payment:"Pagamento no hotel em UZS; pequeno-almoço incluído.",note:"Reserva confirmada. Cancelamento gratuito até 29 de outubro às 23:59 (+05)."},
