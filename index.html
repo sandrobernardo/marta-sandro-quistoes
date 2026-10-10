@@ -144,9 +144,10 @@ const days=[
 ["Depois do passo","Descida para Kyzart e almoço","O almoço está previsto numa casa de hóspedes em Kyzart."],
 ["Tarde","Transfer para Bishkek ou Kochkor","O programa indica regresso por transporte, de acordo com os planos dos viajantes. Confirmar destino final e hora estimada com o operador."],
 ["Noite","281 Hotel, Bishkek","Reserva confirmada para 5–7 de novembro. A tour de Song-Kul ainda não está marcada; reservar apenas depois de confirmar disponibilidade, condições de novembro e regresso a Bishkek no dia 5."]]},
-{date:"Sex. · 6 nov.",place:"Bishkek",country:"Quirguistão",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Bishkek%2C_Kyrgyzstan.jpg",weather:"Bishkek: estimativa sazonal; previsão por confirmar",events:[
-["Manhã · 2–3 locais sugeridos","Bazar Osh → Praça Ala-Too → Oak Park","Roteiro pelo centro, ajustável ao tempo e aos horários de abertura."],
-["Tarde","Confirmar voo e transporte para Manas","O voo é de madrugada. Fazer check-in online, confirmar terminal e reservar transporte com margem."],
+{date:"Sex. · 6 nov.",place:"Bishkek + Parque Nacional Ala-Archa",country:"Quirguistão",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Bishkek%2C_Kyrgyzstan.jpg",weather:"Bishkek e Ala-Archa: estimativa sazonal; confirmar condições da montanha",events:[
+["Manhã · sugestões opcionais","Bazar Osh → Praça Ala-Too → Oak Park","Sugestões para a manhã, não compromissos fixos. Escolher uma ou duas conforme o ritmo e guardar tempo para o parque."],
+["Tarde · plano a manter","Parque Nacional Ala-Archa","Manter a visita ao parque nacional que tinhas planeado. Fica fora de Bishkek; reservar várias horas para ida, passeio e regresso. Em novembro, confirmar com antecedência o estado da estrada, neve/gelo, horários e acessibilidade dos trilhos. Não contar com o miradouro Broken Heart se as condições não forem seguras."],
+["Fim da tarde/noite","Regresso a Bishkek; confirmar voo e transporte para Manas","O voo é de madrugada. Fazer check-in online, confirmar terminal e combinar transporte com margem; não depender de transporte público nocturno."],
 ["Noite","Alojamento em Bishkek","281 Hotel · 81,10 USD para 5–7 de novembro. Reserva confirmada; ver detalhes na secção Alojamentos."]]},
 {date:"Sáb. · 7 nov.",place:"Bishkek → Istambul → Lisboa",country:"Regresso",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Bishkek%2C_Kyrgyzstan.jpg",weather:"Bishkek: estimativa sazonal; previsão por confirmar",events:[
 ["Antes da 00h30","Alojamento → aeroporto Manas (BSZ)","Confirmar transporte nocturno e hora de recolha."],
@@ -165,9 +166,12 @@ const places=[
 ["Samarcanda","Shah-i-Zinda","Conjunto de mausoléus e corredores de azulejos azuis.","https://commons.wikimedia.org/wiki/Special:FilePath/Samarkand_Shah-i_Zinda.JPG"],
 ["Tashkent","Complexo Khast Imam","Conjunto religioso histórico e biblioteca de manuscritos.","https://commons.wikimedia.org/wiki/Special:FilePath/Hazrat_imam_complex_panoramic_view.jpg"],
 ["Tashkent","Bazar Chorsu","Grande mercado tradicional para alimentos, pão e produtos locais.","https://commons.wikimedia.org/wiki/Special:FilePath/Chorsu_Bazaar_in_Tashkent.jpg"],
-["Tashkent","Metro de Tashkent","Estações decoradas; usar o metro como transporte e visita arquitectónica.","https://commons.wikimedia.org/wiki/Special:FilePath/Tashkent_Metro%2C_Kosmonavtlar_Station.jpeg"],
+["Tashkent","Metro Kosmonavtlar","Estação temática sobre a exploração espacial, com decoração azul e retratos de cosmonautas.","https://commons.wikimedia.org/wiki/Special:FilePath/Tashkent_Metro,_Kosmonavtlar_Station.jpeg"],
+["Tashkent","Metro Alisher Navoi","Estação com cúpulas e ornamentação inspirada na arte islâmica; uma das paragens mais fotogénicas.","https://commons.wikimedia.org/wiki/Special:FilePath/Tashkent_Metro_Alisher_Navoi.jpg"],
+["Tashkent","Metro Mustaqillik Maydoni","Estação monumental com colunas e candeeiros; confirmar regras locais para fotografias.","https://commons.wikimedia.org/wiki/Special:FilePath/Tashkent_Metro_Mustaqillik_Maydoni.jpg"],
 ["Bishkek","Praça Ala-Too","Praça central e ponto de partida para conhecer o centro.","https://commons.wikimedia.org/wiki/Special:FilePath/Bishkek_City.jpg"],
-["Ala-Archa","Broken Heart viewpoint","Miradouro e trilho; verificar neve, gelo e acessibilidade no dia.","https://commons.wikimedia.org/wiki/Special:FilePath/Ala-Archa_National_Park_in_Kyrgyzstan.jpg"],
+["Ala-Archa","Parque Nacional Ala-Archa","Parque nacional fora de Bishkek; reservar a tarde para a deslocação e um passeio curto, condicionado pelas condições de novembro.","https://commons.wikimedia.org/wiki/Special:FilePath/Ala-Archa_National_Park_in_Kyrgyzstan.jpg"],
+["Ala-Archa","Miradouro Broken Heart","Possível trilho/miradouro dentro de Ala-Archa, apenas se o estado dos trilhos e o tempo permitirem; não é obrigatório para visitar o parque.","https://commons.wikimedia.org/wiki/Special:FilePath/Ala-Archa_National_Park_in_Kyrgyzstan.jpg"],
 ["Song-Kul","Lago Song-Kul","Lago alpino e pastagens; em novembro o acesso e as yurtas podem estar fechados.","https://commons.wikimedia.org/wiki/Special:FilePath/Song-K%C3%B6l.jpg"]
 ];
 const stays=[
@@ -205,7 +209,7 @@ const dayPois = [
 [{n:"Bukhara — centro histórico",d:"O comboio chega às 10h38; aproveitar a tarde para conhecer o centro histórico.",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Kalyan_minaret,_Bukhara.jpg"},{n:"Lyabi-Hauz",d:"Praça e lagoa histórica, boa para passeio e pausa para comer.",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Lyab-i_Hauz.jpg"},{n:"Complexo Poi-Kalyan",d:"Minarete e mesquita no coração do centro histórico.",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Kalyan_minaret%2C_Bukhara.jpg"}],
 
 [{n:"Registan",d:"Praça monumental das três madrassas; reservar cerca de 1–1,5 h.",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Registan,_Samarkand_(8590118268).jpg"},{n:"Gur-e-Amir",d:"Mausoléu de Amir Timur; pode combinar-se com Registan, dependendo da hora de chegada.",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Gur-e-Amir.jpg"}],
-[{n:"Tashkent — metro",d:"Estações decoradas para explorar durante o percurso pela cidade.",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Tashkent_Metro.jpg"},{n:"Bazar Chorsu",d:"Mercado tradicional, se o horário e a chegada permitirem.",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Chorsu_Bazaar.jpg"},{n:"Complexo Khast Imam",d:"Conjunto religioso histórico; confirmar horários de acesso.",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Khazrati_Imam_Mosque.jpg"}],
+[{n:"Metro Kosmonavtlar",d:"Estação temática sobre a exploração espacial, com decoração azul e retratos de cosmonautas. Sugestão opcional de visita arquitectónica.",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Tashkent_Metro,_Kosmonavtlar_Station.jpeg"},{n:"Metro Alisher Navoi",d:"Estação com cúpulas e motivos ornamentais inspirados na arte islâmica. Pode ser visitada na mesma deslocação de metro.",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Tashkent_Metro_Alisher_Navoi.jpg"},{n:"Metro Mustaqillik Maydoni",d:"Estação monumental, com colunas e candeeiros. Confirmar regras locais de fotografia e acesso.",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Tashkent_Metro_Mustaqillik_Maydoni.jpg"},{n:"Bazar Chorsu",d:"Mercado tradicional, se o horário e a chegada permitirem.",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Chorsu_Bazaar.jpg"},{n:"Complexo Khast Imam",d:"Conjunto religioso histórico; confirmar horários de acesso.",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Khazrati_Imam_Mosque.jpg"}],
 [{n:"Bishkek — centro",d:"Passeio curto possível depois da chegada, dependendo do horário e do cansaço.",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Ala-Too_Square_Bishkek.jpg"}],
 [{n:"Vale de Kilemche",d:"Paisagem de montanha e passeio a cavalo previsto no programa da tour, sujeito às condições e confirmação do operador.",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Kyrgyzstan_mountains.jpg"}],
 [{n:"Lago Song-Kul e pastagens",d:"Visita prevista no programa de três dias; acesso, yurts e cavalgada dependem de confirmação do operador e das condições de novembro.",img:"https://commons.wikimedia.org/wiki/Special:FilePath/Song-K%C3%B6l.jpg"}],
@@ -341,7 +345,11 @@ const tripMapPoints=[
 {n:"Inter Hotel — Bishkek",c:3,t:"hotel",p:[42.88,74.59],q:"Inter Hotel Bishkek 124 Turusbekov"},
 {n:"Praça Ala-Too — Bishkek",c:3,t:"visita",p:[42.876,74.603],q:"Ala Too Square Bishkek"},
 {n:"Parque Nacional Ala-Archa",c:3,t:"visita",p:[42.5667,74.4833],q:"Ala Archa National Park Kyrgyzstan"},
+{n:"Parque Nacional Ala-Archa",c:3,t:"visita",p:[42.5667,74.4833],q:"Ala Archa National Park Kyrgyzstan"},
 {n:"Lago Song-Kul",c:3,t:"visita",p:[41.833,75.15],q:"Song Kol lake Kyrgyzstan"},
+{n:"Metro Kosmonavtlar — Tashkent",c:2,t:"visita",p:[41.311,69.283],q:"Kosmonavtlar metro station Tashkent"},
+{n:"Metro Alisher Navoi — Tashkent",c:2,t:"visita",p:[41.326,69.241],q:"Alisher Navoi metro station Tashkent"},
+{n:"Metro Mustaqillik Maydoni — Tashkent",c:2,t:"visita",p:[41.311,69.279],q:"Mustaqillik Maydoni metro station Tashkent"},
 {n:"281 Hotel — Bishkek",c:3,t:"hotel",p:[42.879,74.612],q:"281 Hotel Bishkek Abdyrakhmanova 281"}
 ];
 let tripLeafletMap=null;function focusTripMap(country){if(!tripLeafletMap)return;document.querySelectorAll(".map-filters button").forEach((b,i)=>b.classList.toggle("active",i===country));const pts=country===0?tripMapPoints:tripMapPoints.filter(p=>p.c===country);tripLeafletMap.fitBounds(pts.map(p=>p.p),{padding:[24,24],maxZoom:country===0?5:7});}function initTripMap(){
