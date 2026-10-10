@@ -323,6 +323,7 @@ const tripMapPoints=[
 {n:"Parque Nacional Ala-Archa",c:3,t:"visita",p:[42.5667,74.4833],q:"Ala Archa National Park Kyrgyzstan"},
 {n:"Lago Song-Kul",c:3,t:"visita",p:[41.833,75.15],q:"Song Kol lake Kyrgyzstan"},
 {n:"281 Hotel — Bishkek",c:3,t:"hotel",p:[42.879,74.612],q:"281 Hotel Bishkek Abdyrakhmanova 281"}
+];
 let tripLeafletMap=null;function focusTripMap(country){if(!tripLeafletMap)return;document.querySelectorAll(".map-filters button").forEach((b,i)=>b.classList.toggle("active",i===country));const pts=country===0?tripMapPoints:tripMapPoints.filter(p=>p.c===country);tripLeafletMap.fitBounds(pts.map(p=>p.p),{padding:[24,24],maxZoom:country===0?5:7});}function initTripMap(){
 const el=document.getElementById("tripMap");if(!el)return;
 if(!window.L){el.innerHTML="Não foi possível carregar a biblioteca do mapa. Verifica a ligação à Internet e tenta novamente.";return;}
