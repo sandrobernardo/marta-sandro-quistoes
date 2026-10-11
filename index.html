@@ -26,6 +26,35 @@ label{display:block;color:var(--muted);font-size:12px;margin:10px 0 4px}input,se
 
 .budget-summary{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:12px;margin:16px 0}.budget-total,.budget-small{border-radius:14px;padding:16px;background:#e8efeb;min-width:0}.budget-total{background:#102b3f;color:#fffdf8}.budget-total span,.budget-small span{display:block;font-size:12px;opacity:.85}.budget-total strong,.budget-small strong{display:block;font:500 clamp(24px,4vw,34px) Georgia,serif;margin:8px 0}.budget-total small,.budget-small small{display:block;font-size:12px;line-height:1.45;opacity:.85}.budget-table td:nth-child(2){font-weight:800;white-space:nowrap}.budget-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;background:#527d79}.budget-dot.hotel{background:#bd7552}.budget-dot.flight{background:#d7ad63}.budget-dot.train{background:#218b9a}.budget-dot.tour{background:#8b4c55}.budget-dot.visa{background:#687b83}.budget-dot.meal{background:#527d79}.budget-dot.local{background:#6685a2}.budget-dot.entry{background:#b38b48}.budget-dot.buffer{background:#8b4c55}@media(max-width:720px){.budget-summary{grid-template-columns:1fr}.budget-table td:nth-child(2){white-space:normal}}
 .weather-guide{margin:14px 0;padding:16px;border:1px solid #dce6e0;border-radius:15px;background:#eef3ef}.weather-guide .weather-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.weather-guide .weather-temp{font:500 27px Georgia,serif;color:#142b3a}.weather-guide .weather-label{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#527d79;font-weight:800}.weather-guide .weather-advice{margin:10px 0 0;padding:11px 13px;background:#fffdf8;border-radius:10px;color:#304c53}.weather-guide .weather-note{font-size:11px;color:#687b83;margin:9px 0 0}.daily-map{margin:14px 0;padding:14px;border:1px solid #dce6e0;border-radius:14px;background:#f4f6f7}.transfer-stop{padding-bottom:14px;border-bottom:1px solid #e1e5e8}.transfer-stop strong{color:#9a6b19}
+
+/* Redesign 2026-10: interface compacta, navegação mais clara e página inicial prática */
+:root{--ink:#102b3f;--muted:#647782;--cream:#f3f5f4;--paper:#ffffff;--gold:#c69a4d;--teal:#287c78;--line:#dce4e2}
+body{background:#f3f5f4;color:#173344}
+.hero{min-height:230px;align-items:center;background:#102b3f}
+.hero:before{background:linear-gradient(90deg,rgba(10,31,42,.94),rgba(10,31,42,.68) 55%,rgba(10,31,42,.25)),url('https://upload.wikimedia.org/wikipedia/commons/1/13/Registan_Samarkand.jpg') center 48%/cover}
+.hero-inner{width:min(1180px,100%);padding:27px 24px}
+.hero .eyebrow{letter-spacing:.13em;font-size:10px}
+.hero h1{font:500 clamp(30px,4.5vw,48px)/1.02 Georgia,serif;max-width:600px;margin:8px 0}
+.hero p{max-width:650px;margin:8px 0;color:#e4ebed;font-size:14px}
+.hero-meta{margin-top:13px;gap:6px}.pill{padding:5px 10px;font-size:11px}
+.navwrap{background:rgba(255,255,255,.96);border-bottom:1px solid #dce4e2;box-shadow:0 4px 14px #102b3f0b}
+nav{max-width:1180px;padding:9px 20px;gap:5px}
+nav button{font-size:12px;padding:9px 12px;border-radius:9px;color:#536a76}
+nav button.active{background:#102b3f;color:#fff}
+main{max-width:1180px;padding:25px 22px 56px}
+.section-head{margin:3px 0 17px}
+.section-head h2{font-size:clamp(27px,3.4vw,37px)}
+.cards{gap:13px}.card{border-color:#dfe6e4;border-radius:13px;box-shadow:0 2px 8px #102b3f08}
+.card-body{padding:16px}.card h3{font-size:20px}
+.cover{height:145px}
+.countdown-panel{border-radius:13px;padding:18px 22px;margin-bottom:14px;background:#102b3f}
+.statrow{gap:10px}.stat{border-radius:12px}
+.notice{border-radius:10px}
+@media(max-width:700px){
+ .hero{min-height:205px}.hero-inner{padding:24px 18px}.hero h1{font-size:34px}.hero p{font-size:13px}.hero-meta{gap:5px}
+ nav{padding:8px 12px;gap:4px}nav button{font-size:12px;padding:9px 10px}
+ main{padding:20px 13px 42px}.cover{height:125px}
+}
 </style></head>
 <body>
 <header class="hero"><div class="hero-inner"><div class="eyebrow">Diário de viagem · Outono 2026</div><h1>Marta e Sandro<br>pelos Quistões</h1><p>Turquemenistão, Uzbequistão e Quirguistão. O roteiro, as deslocações e as reservas organizados por dia.</p><div class="hero-meta"><span class="pill">23 outubro — 7 novembro</span><span class="pill">Turquemenistão · Uzbequistão · Quirguistão</span><span class="pill">Guia pessoal</span></div></div></header>
@@ -34,15 +63,17 @@ label{display:block;color:var(--muted);font-size:12px;margin:10px 0 4px}input,se
 </nav></div>
 <main>
 <section id="home" class="page">
-<div class="section-head"><div><div class="kicker">A vossa aventura</div><h2>O plano de viagem</h2><p class="sub">Um roteiro vivo. Cada dia reúne as deslocações, os bilhetes, as dormidas e os lugares a descobrir.</p></div></div>
-<div class="countdown-panel" aria-live="polite"><div class="countdown-label">A contagem decrescente já começou</div><div class="countdown-values"><div><strong id="countDays">--</strong><span>dias</span></div><div class="countdown-separator">:</div><div><strong id="countHours">--</strong><span>horas</span></div></div><p id="countdownCaption">Até partirmos, a 23 de outubro.</p></div>
-<div class="statrow"><div class="stat"><span>Duração</span><strong>16 dias</strong></div><div class="stat"><span>Países</span><strong>3</strong></div><div class="stat"><span>Moedas locais</span><strong>TMT · UZS · KGS</strong></div></div>
+<div class="section-head"><div><div class="kicker">MS Quistões · outubro / novembro 2026</div><h2>A vossa viagem, num só lugar</h2><p class="sub">Acesso rápido ao que precisam durante a viagem, sem andar à procura nos menus.</p></div></div>
+<div class="countdown-panel" aria-live="polite"><div><div class="countdown-label">Contagem para a partida</div><p id="countdownCaption">Lisboa · 23 de outubro</p></div><div class="countdown-values"><div><strong id="countDays">--</strong><span>dias</span></div><div class="countdown-separator">:</div><div><strong id="countHours">--</strong><span>horas</span></div></div></div>
+<div class="statrow"><div class="stat"><span>Duração</span><strong>16 dias</strong></div><div class="stat"><span>Países</span><strong>3</strong></div><div class="stat"><span>Moedas</span><strong>TMT · UZS · KGS</strong></div></div>
 <div class="cards">
-<div class="card"><div class="cover" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Turkmenistan_-_Yangykala_Canyon.jpg')"></div><div class="card-body"><div class="kicker">23–29 outubro</div><h3>Turquemenistão</h3><p class="muted">Tour TM Tour: Ashgabat, comboios nocturnos para Türkmenbaşy, Yangykala, Merv, Sport Hotel, Darvaza e saída pela fronteira de Shavat.</p><button class="btn dark" onclick="go('days')">Ver dias</button></div></div>
-<div class="card"><div class="cover" style="background-image:url('https://upload.wikimedia.org/wikipedia/commons/1/13/Registan_Samarkand.jpg')"></div><div class="card-body"><div class="kicker">27–31 outubro</div><h3>Uzbequistão</h3><p class="muted">Khiva, Bukhara, Samarcanda e Tashkent — cidades, mercados e arquitectura da Rota da Seda.</p><button class="btn dark" onclick="go('places')">Explorar cidades</button></div></div>
-<div class="card"><div class="cover" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Song-K%C3%B6l.jpg')"></div><div class="card-body"><div class="kicker">31 outubro–7 novembro</div><h3>Quirguistão</h3><p class="muted">Bishkek, Ala-Archa e Song-Kul. Temperaturas baixas e estradas de montanha a confirmar.</p><button class="btn dark" onclick="go('days')">Ver roteiro</button></div></div>
-<div class="card full"><div class="card-body"><h3>Antes de partir</h3><div class="notice">Os dados de voos e comboios foram transcritos do Excel. Os horários, os nomes comerciais e os localizadores devem ser comparados com os bilhetes originais. As temperaturas são médias sazonais indicativas, não previsões diárias confirmadas.</div><div class="actions"><button class="btn gold" onclick="go('notes')">Completar localizadores</button><button class="btn" onclick="go('money')">Abrir despesas</button></div></div></div>
-</div></section>
+<div class="card"><div class="cover" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Turkmenistan_-_Yangykala_Canyon.jpg')"></div><div class="card-body"><div class="kicker">23–28 outubro</div><h3>Turquemenistão</h3><p class="muted">Ashgabat, Yangykala, Merv e a cratera de Darvaza.</p><button class="btn dark" onclick="go('days')">Abrir roteiro</button></div></div>
+<div class="card"><div class="cover" style="background-image:url('https://upload.wikimedia.org/wikipedia/commons/1/13/Registan_Samarkand.jpg')"></div><div class="card-body"><div class="kicker">A partir de 29 outubro</div><h3>Uzbequistão</h3><p class="muted">Khiva, Bukhara, Samarcanda e Tashkent.</p><button class="btn dark" onclick="go('places')">Ver locais</button></div></div>
+<div class="card"><div class="cover" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Song-K%C3%B6l.jpg')"></div><div class="card-body"><div class="kicker">2–7 novembro</div><h3>Quirguistão</h3><p class="muted">Bishkek, montanhas, lagos e passeio a cavalo.</p><button class="btn dark" onclick="go('days')">Abrir roteiro</button></div></div>
+<div class="card full"><div class="card-body"><div class="kicker">Acesso rápido</div><h3>O que precisam agora?</h3><div class="actions"><button class="btn dark" onclick="go('today')">O dia de hoje</button><button class="btn" onclick="go('stays')">Moradas dos alojamentos</button><button class="btn" onclick="go('transport')">Transportes e mapas</button><button class="btn" onclick="go('money')">Despesas e câmbio</button><button class="btn" onclick="go('notes')">Reservas e contactos</button><button class="btn" onclick="go('challenges')">Desafio diário</button></div></div></div>
+<div class="card full"><div class="card-body"><h3>Organização da viagem</h3><p class="muted">O roteiro detalhado, os locais a visitar, os restaurantes, os alojamentos e as despesas estão separados por secções no menu acima. As sugestões de visita são apoio ao planeamento; confirma horários e condições localmente.</p></div></div>
+</div>
+</section>
 <section id="today" class="page active"><div class="section-head"><div><div class="kicker">O que interessa agora</div><h2 id="todayHeading">Hoje</h2><p class="sub" id="todayIntro">O dia da viagem correspondente à data de hoje.</p></div></div><div id="todayCard"></div></section>
 <section id="days" class="page"><div class="section-head"><div><div class="kicker">Roteiro completo</div><h2>Dia a dia</h2><p class="sub">Horários e ligações do Excel mantidos; pontos turísticos e tempos de visita são sugestões a afinar.</p></div></div><div id="dayList" class="daylist"></div></section>
 <section id="places" class="page"><div class="section-head"><div><div class="kicker">Paragens escolhidas</div><h2>O que visitar</h2><p class="sub">Cada dia indica quantos locais cabem realisticamente no tempo disponível, com uma descrição curta, fotografia e ligação individual ao mapa.</p></div></div><div class="country-legend"><span class="country-chip" style="--c:#bd7552">Turquemenistão</span><span class="country-chip" style="--c:#218b9a">Uzbequistão</span><span class="country-chip" style="--c:#8b4c55">Quirguistão</span></div><div id="placesList" class="cards"></div></section>
