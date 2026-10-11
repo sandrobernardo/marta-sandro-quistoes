@@ -417,6 +417,6 @@ document.getElementById("exportAll").addEventListener("click",()=>download("copi
 document.getElementById("importFile").addEventListener("change",async e=>{try{stateNew=JSON.parse(await e.target.files[0].text());Object.assign(state,stateNew);save();renderFlights();renderBookingEditor();renderExpenses();document.getElementById("tourNotes").value=state.tourNotes||"";alert("Cópia importada.")}catch(err){alert("Não foi possível ler este ficheiro.")}});
 document.getElementById("tourNotes").value=state.tourNotes;
 document.getElementById("saveNotes").addEventListener("click",()=>{state.tourNotes=document.getElementById("tourNotes").value;save();alert("Notas guardadas.")});
-updateCountdown();setInterval(updateCountdown,60000);renderChallenges();setInterval(renderChallenges,60000);renderDays();renderPlaces();renderStays();renderFood();renderTransport();initTripMap();renderFlights();renderBookingEditor();renderExpenses();updateFx();
+updateCountdown();setInterval(updateCountdown,60000);renderChallenges();setInterval(renderChallenges,60000);renderDays();if(challengeDate()>="2026-10-23"&&challengeDate()<="2026-11-07")go("challenges");renderPlaces();renderStays();renderFood();renderTransport();initTripMap();renderFlights();renderBookingEditor();renderExpenses();updateFx();
 </script><!-- Versão pública: códigos de confirmação e PIN de reservas removidos. -->
 </body></html>
