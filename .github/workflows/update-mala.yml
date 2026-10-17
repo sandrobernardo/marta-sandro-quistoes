@@ -1,0 +1,63 @@
+name: Update mala section
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  update:
+    if: ${{ !contains(github.event.head_commit.message, '[mala-auto]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add smart packing section
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          if 'id="packingApp"' in s:
+              raise SystemExit('packing section already exists')
+          css = r'''\n<style id="packingStyles">
+.pack-hero{background:linear-gradient(135deg,#102b3f,#315f60);color:#fff;padding:20px;border-radius:20px;margin:0 0 18px;position:relative;overflow:hidden}
+.pack-hero:after{content:'✦';position:absolute;right:22px;top:12px;font-size:70px;opacity:.08}.pack-kicker{font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:#e8c98d;font-weight:800}.pack-hero h2{font:500 30px/1.05 Georgia,serif;margin:6px 0 8px}.pack-hero p{margin:0;color:#e8eeed;max-width:700px}.pack-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}.pack-card{grid-column:span 4;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:16px}.pack-card.wide{grid-column:span 8}.pack-card.full{grid-column:1/-1}.pack-card h3{font:500 21px/1.15 Georgia,serif;margin:0 0 7px}.pack-country{display:inline-block;font-size:10px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;padding:5px 9px;border-radius:999px;margin-bottom:9px;background:#f1e3c5}.pack-country.uz{background:#dceff1}.pack-country.kg{background:#eadde0}.pack-list{display:grid;gap:7px;margin:0;padding:0;list-style:none}.pack-list li{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}.pack-list li:last-child{border-bottom:0}.pack-list b{font-weight:800;white-space:nowrap}.pack-note{margin-top:12px;padding:11px 12px;background:#eef1eb;border-radius:12px;color:#385b56;font-size:12px}.pack-priority{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.pack-tag{padding:6px 9px;border-radius:999px;background:#f5f1e8;font-size:11px;color:#53666e}.pack-check{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.pack-check label{display:flex;align-items:center;gap:8px;margin:0;padding:9px 10px;background:#f7f4ed;border-radius:10px;color:var(--ink);font-size:12px}.pack-check input{width:auto}.pack-total{font:500 27px Georgia,serif;margin-top:3px}.pack-small{font-size:12px;color:var(--muted)}
+@media(max-width:720px){.pack-card,.pack-card.wide{grid-column:1/-1}.pack-check{grid-template-columns:1fr}.pack-hero h2{font-size:27px}}
+</style>'''
+          html = r'''\n<section id="packingApp" class="page">
+  <div class="pack-hero">
+    <div class="pack-kicker">Preparar a viagem</div>
+    <h2>Mala inteligente</h2>
+    <p>16 dias · 3 países · temperaturas muito diferentes. Leva o essencial sem encher a mala desnecessariamente.</p>
+    <div class="pack-priority"><span class="pack-tag">4 pares de calças</span><span class="pack-tag">10–12 t-shirts</span><span class="pack-tag">16–18 cuecas</span><span class="pack-tag">casaco quente</span><span class="pack-tag">impermeável</span><span class="pack-tag">roupa térmica</span></div>
+  </div>
+  <div class="pack-grid">
+    <article class="pack-card wide">
+      <h3>Lista completa</h3>
+      <p class="pack-small">Quantidades pensadas para a viagem inteira, permitindo repetir roupa exterior e fazer uma lavagem se necessário.</p>
+      <ul class="pack-list">
+        <li><span>T-shirts / camisolas leves</span><b>10–12</b></li><li><span>Manga comprida</span><b>3–4</b></li><li><span>Calças</span><b>4</b></li><li><span>Calças confortáveis de viagem</span><b>1</b></li><li><span>Casaco quente</span><b>1</b></li><li><span>Impermeável / corta-vento</span><b>1</b></li><li><span>Polar / camisola quente</span><b>1–2</b></li><li><span>Roupa térmica</span><b>1 conjunto</b></li><li><span>Cuecas</span><b>16–18</b></li><li><span>Meias normais</span><b>10–12</b></li><li><span>Meias quentes</span><b>3–4</b></li><li><span>Pijama</span><b>1</b></li><li><span>Sapatilhas confortáveis</span><b>1 par</b></li><li><span>Botas / calçado impermeável</span><b>1 par</b></li><li><span>Chinelos</span><b>1 par</b></li><li><span>Gorro + luvas + cachecol/gola</span><b>1 de cada</b></li><li><span>Óculos de sol</span><b>1</b></li><li><span>Fato de banho</span><b>1</b></li><li><span>Mochila pequena de dia</span><b>1</b></li><li><span>Garrafa reutilizável</span><b>1</b></li><li><span>Power bank + carregadores</span><b>1 + conjunto</b></li><li><span>Adaptador universal</span><b>1</b></li><li><span>Lanterna frontal</span><b>1</b></li><li><span>Kit higiene + toalhitas + lenços</span><b>1</b></li><li><span>Medicamentos / primeiros socorros</span><b>1 kit</b></li><li><span>Documentos + cópias</span><b>1 conjunto</b></li><li><span>Cartões + dinheiro em espécie</span><b>1 conjunto</b></li><li><span>Saco para roupa suja</span><b>1</b></li><li><span>Saco impermeável para eletrónica/documentos</span><b>1–2</b></li>
+      </ul>
+    </article>
+    <article class="pack-card"><span class="pack-country">Turquemenistão · 23–28 out.</span><h3>O que vais usar aqui</h3><ul class="pack-list"><li><span>T-shirts</span><b>3–4</b></li><li><span>Manga comprida</span><b>1–2</b></li><li><span>Calças</span><b>2–3</b></li><li><span>Casaco</span><b>1</b></li><li><span>Impermeável</span><b>1</b></li><li><span>Sapatilhas</span><b>1</b></li></ul><div class="pack-note">Durante o dia pode estar agradável, mas as noites são frescas. Mantém o casaco acessível.</div></article>
+    <article class="pack-card"><span class="pack-country uz">Uzbequistão · 29 out.–2 nov.</span><h3>O que vais usar aqui</h3><ul class="pack-list"><li><span>T-shirts</span><b>3–4</b></li><li><span>Manga comprida</span><b>2</b></li><li><span>Calças</span><b>2–3</b></li><li><span>Casaco</span><b>1</b></li><li><span>Impermeável</span><b>1</b></li><li><span>Sapatilhas</span><b>1</b></li></ul><div class="pack-note">É a zona mais simples para a roupa do dia a dia. Guarda uma camada quente para as noites e deslocações.</div></article>
+    <article class="pack-card"><span class="pack-country kg">Quirguistão · 2–7 nov.</span><h3>Prioridade: frio</h3><ul class="pack-list"><li><span>Casaco quente</span><b>1</b></li><li><span>Polar / camisola</span><b>1–2</b></li><li><span>Roupa térmica</span><b>1 conjunto</b></li><li><span>Gorro</span><b>1</b></li><li><span>Luvas</span><b>1</b></li><li><span>Cachecol/gola</span><b>1</b></li><li><span>Meias quentes</span><b>3–4</b></li><li><span>Calçado impermeável</span><b>1</b></li></ul><div class="pack-note">Importante: para os 3 dias de Song-Kul, leva todo o equipamento quente contigo. Não o deixes no hotel.</div></article>
+    <article class="pack-card full"><h3>Checklist</h3><div class="pack-check"><label><input type="checkbox"> Roupa</label><label><input type="checkbox"> Casaco quente</label><label><input type="checkbox"> Impermeável</label><label><input type="checkbox"> Roupa térmica</label><label><input type="checkbox"> Gorro</label><label><input type="checkbox"> Luvas</label><label><input type="checkbox"> Cachecol/gola</label><label><input type="checkbox"> Calçado impermeável</label><label><input type="checkbox"> Documentos</label><label><input type="checkbox"> Dinheiro/cartões</label><label><input type="checkbox"> Carregadores</label><label><input type="checkbox"> Power bank</label><label><input type="checkbox"> Lanterna</label><label><input type="checkbox"> Higiene</label><label><input type="checkbox"> Medicamentos</label><label><input type="checkbox"> Mochila de dia</label></div></article>
+  </div>
+</section>'''
+          s = s.replace('</body>', css + html + '\n</body>', 1)
+          p.write_text(s, encoding='utf-8')
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Add smart packing list [mala-auto]"
+          git push
+      - name: Remove temporary workflow
+        if: ${{ success() }}
+        run: |
+          rm -f .github/workflows/update-mala.yml
+          git add .github/workflows/update-mala.yml
+          git commit -m "Remove temporary update workflow [mala-auto]" || true
+          git push || true
