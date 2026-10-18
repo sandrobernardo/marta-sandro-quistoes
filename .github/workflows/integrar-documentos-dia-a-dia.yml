@@ -1,0 +1,74 @@
+name: Integrar documentos no dia a dia
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/integrar-documentos-dia-a-dia.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  integrar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Integrar bilhetes no index.html
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'index.html';
+            const { data } = await github.rest.repos.getContent({owner: context.repo.owner, repo: context.repo.repo, path, ref: 'main'});
+            const content = Buffer.from(data.content, 'base64').toString('utf8');
+            if (content.includes('INTEGRADO_DOCUMENTOS_DIA_A_DIA_2026')) {
+              core.info('Já integrado. Nada a fazer.');
+              return;
+            }
+            let s = content;
+            s = s.replace(
+              '["07h10–10h38","Comboio Khiva → Bukhara","Excel: 332 000 UZS. Horário e preço são dados do Excel, não confirmação de bilhete. Comprar/confirmar em https://eticket.railway.uz/en/."]',
+              '["07h10–10h38","Comboio 751MA · Khiva → Bukhara","Bilhete confirmado. Pago por Sandro: 53,77 €. Parte da Marta: 26,89 €. <a href=\"./documentos/comboio-30-out-khiva-bukhara.html\" target=\"_blank\" rel=\"noopener\">Ver bilhete ↗</a>"]'
+            );
+            s = s.replace(
+              '["05h21–07h38","Comboio Bukhara → Samarcanda","Excel: 169 810 UZS. Confirmar bilhete, estação e horário em https://eticket.railway.uz/en/."]',
+              '["05h21–07h38","Comboio 711FA · Bukhara → Samarcanda","Bilhete confirmado. Pago por Sandro: 27,52 €. Parte da Marta: 13,76 €. <a href=\"./documentos/comboio-31-out-bukhara-samarkand.html\" target=\"_blank\" rel=\"noopener\">Ver bilhete ↗</a>"]'
+            );
+            s = s.replace(
+              '["05h29–09h40","Comboio Samarcanda → Tashkent (SV no Excel)","Excel: 320 060 UZS. Confirmar categoria, estação, horário e bilhete em https://eticket.railway.uz/en/."],',
+              '["05h29–09h40","Comboio · Samarcanda → Tashkent","Bilhete confirmado. Pago por Sandro: 51,53 €. Parte da Marta: 25,77 €. <a href=\"./documentos/comboio-1-nov-samarkand-tashkent.html\" target=\"_blank\" rel=\"noopener\">Ver bilhete ↗</a>"],'
+            );
+            s = s.replace(
+              '["11h00–13h10 (Excel; confirmar)","Voo C6219 · Tashkent (TAS) → Bishkek (BSZ)","Confirmar número do voo, horas locais e bilhete original."],',
+              '["11h00–13h10","Voo C6219 · Tashkent (TAS) → Bishkek (BSZ)","Booking: SGIMOV · Pago por Sandro: 193,90 € · Parte da Marta: 96,95 €. <a href=\"./documentos/voo-2-nov-tashkent-bishkek.html\" target=\"_blank\" rel=\"noopener\">Ver bilhete ↗</a>"],'
+            );
+            s = s.replace(
+              'const trains=[\n{date:"30 out.",name:"Comboio Khiva → Bukhara",time:"07h10–10h38",local:"332 000 UZS",eur:"≈ €24,90",note:"Duração anotada: 3h28. Confirmar número do comboio, estação e bilhete."},\n{date:"31 out.",name:"Comboio Bukhara → Samarcanda",time:"05h21–07h38",local:"169 810 UZS",eur:"≈ €12,73",note:"Duração anotada: 2h17. Confirmar estação e bilhete."},\n{date:"1 nov.",name:"Comboio Samarcanda → Tashkent · SV",time:"05h29–09h40",local:"320 060 UZS",eur:"≈ €24,00",note:"Duração anotada: 4h11. Confirmar que “SV” é a classe efectivamente reservada."}\n];',
+              'const trains=[\n{date:"30 out.",name:"Comboio 751MA · Khiva → Bukhara",time:"07h10–10h38",local:"53,77 € pagos por Sandro",eur:"26,89 € Marta",note:"Bilhete confirmado. <a href=\"./documentos/comboio-30-out-khiva-bukhara.html\" target=\"_blank\" rel=\"noopener\">Ver bilhete ↗</a>"},\n{date:"31 out.",name:"Comboio 711FA · Bukhara → Samarcanda",time:"05h21–07h38",local:"27,52 € pagos por Sandro",eur:"13,76 € Marta",note:"Bilhete confirmado. <a href=\"./documentos/comboio-31-out-bukhara-samarkand.html\" target=\"_blank\" rel=\"noopener\">Ver bilhete ↗</a>"},\n{date:"1 nov.",name:"Comboio · Samarcanda → Tashkent",time:"05h29–09h40",local:"51,53 € pagos por Sandro",eur:"25,77 € Marta",note:"Bilhete confirmado. <a href=\"./documentos/comboio-1-nov-samarkand-tashkent.html\" target=\"_blank\" rel=\"noopener\">Ver bilhete ↗</a>"}\n];'
+            );
+            s = s.replace(
+              'const flights=[\n{date:"23 out.",name:"Turkish Airlines TK1780",route:"Lisboa LIS → Istambul IST",time:"05h55–12h40",code:"",note:',
+              'const flights=[\n{date:"23 out.",name:"Turkish Airlines TK1780",route:"Lisboa LIS → Istambul IST",time:"05h55–12h40",code:"",note:'
+            );
+            s = s.replace(
+              '{date:"2 nov.",name:"Centrum Air C6219 (confirmar)",route:"Tashkent TAS → Bishkek BSZ",time:"11h00–13h10",code:"",note:"A folha também anota “Centrum Air 219” e 1h10 de duração. Confirmar o número, hora local e bilhete original."}',
+              '{date:"2 nov.",name:"Centrum Air C6219",route:"Tashkent TAS → Bishkek BSZ",time:"11h00–13h10",code:"SGIMOV",note:"Booking: SGIMOV · Pago por Sandro: 193,90 € · Parte da Marta: 96,95 €. <a href=\"./documentos/voo-2-nov-tashkent-bishkek.html\" target=\"_blank\" rel=\"noopener\">Ver bilhete ↗</a>"}'
+            );
+            s = s.replace(
+              '<tr><td><span class="budget-dot train"></span>Comboios</td><td>≈ €61,96 por pessoa (provisório)</td><td>Khiva–Bukhara: 332 000 UZS; Bukhara–Samarcanda: 169 810 UZS; Samarcanda–Tashkent: 320 060 UZS. Estes preços vieram do Excel inicial, não estão confirmados nos bilhetes e devem ser substituídos quando houver documentos.</td></tr>',
+              '<tr><td><span class="budget-dot train"></span>Comboios</td><td>€66,41 por pessoa</td><td>Valores reais pagos por Sandro: 53,77 € + 27,52 € + 51,53 € = 132,82 €. A parte da Marta é metade: 66,41 €. Os três bilhetes estão disponíveis nos respectivos dias do roteiro.</td></tr>'
+            );
+            s = s.replace(
+              '<tr><td><span class="budget-dot flight"></span>Voos</td><td>295 € por pessoa (estimativa do Excel)</td><td>O Excel inicial tinha um orçamento global de 295 € para voos e assinalava 78 € para Tashkent–Bishkek. Vou usar os 295 € como previsão total de todos os voos, incluindo esses 78 €, e não somar os 78 € novamente. O total será ajustado quando os restantes bilhetes forem comprados.</td></tr>',
+              '<tr><td><span class="budget-dot flight"></span>Voos</td><td>193,90 € pagos por Sandro · 96,95 € Marta</td><td>Voo Tashkent → Bishkek, C6219, booking SGIMOV. Valor real pago por Sandro: 193,90 €. A parte da Marta é 96,95 €.</td></tr>'
+            );
+            s = s.replace('O Excel é usado apenas para os valores previstos ainda sem confirmação; as reservas e documentos mais recentes prevalecem quando existem.', 'Os documentos e valores pagos mais recentes prevalecem sobre estimativas anteriores.');
+            s = s.replace('O Excel inicial previa 295 € para o conjunto dos voos; os 78 € de Tashkent–Bishkek estão incluídos nessa previsão e não são somados outra vez. Por enquanto, uso os 295 € como orçamento estimado por pessoa. Quando comprares os restantes bilhetes, substituímos a estimativa pelos preços reais.', 'O voo Tashkent–Bishkek já está comprado: 193,90 € pagos por Sandro, dos quais 96,95 € correspondem à parte da Marta. Os três comboios também estão comprados e documentados.');
+            s = s.replace('Horários e ligações do Excel mantidos; pontos turísticos e tempos de visita são sugestões a afinar.', 'Horários e ligações confirmados nos documentos quando disponíveis; pontos turísticos e tempos de visita são sugestões a afinar.');
+            s = s.replace('Horários transcritos do Excel; confirmar no bilhete e no Flightradar24.', 'Horários indicados no roteiro; confirmar no bilhete e no Flightradar24.');
+            s = s.replace('Horário transcrito do Excel; confirmar no bilhete e no Flightradar24.', 'Horário indicado no roteiro; confirmar no bilhete e no Flightradar24.');
+            s = s.replace('INTEGRADO_DOCUMENTOS_DIA_A_DIA_2026', 'INTEGRADO_DOCUMENTOS_DIA_A_DIA_2026');
+            s = s.replace('</script><!-- Versão pública:', '/* INTEGRADO_DOCUMENTOS_DIA_A_DIA_2026 */\n</script><!-- Versão pública:');
+            if (s === content) throw new Error('Nenhuma alteração encontrada no index.html.');
+            const encoded = Buffer.from(s, 'utf8').toString('base64');
+            await github.rest.repos.createOrUpdateFileContents({owner: context.repo.owner, repo: context.repo.repo, path, message: 'Mostrar documentos e valores nos dias do roteiro', content: encoded, sha: data.sha, branch: 'main'});
