@@ -2,6 +2,8 @@ name: Fix menu
 on:
   push:
     branches: [main]
+    paths:
+      - '.github/workflows/fix-menu.yml'
 permissions:
   contents: write
 jobs:
@@ -9,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Corrigir estrutura e menu Logística
+      - name: Corrigir estrutura menu e informação confirmada
         shell: python
         run: |
           from pathlib import Path
@@ -24,7 +26,6 @@ jobs:
           if n:
               s = s2
           else:
-              # Se já estiver dentro do submenu, apenas garantir Área privada.
               old_group = r'<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu">.*?</div></div>'
               m = re.search(old_group, s, flags=re.S)
               if m and 'data-page="private"' not in m.group(0):
@@ -52,6 +53,45 @@ jobs:
           '''
           if '/* Mobile logistics menu */' not in s:
               s=s.replace('</style>', css+'\n</style>', 1)
+
+          # Dados de voos confirmados a partir dos itinerários enviados.
+          flights = '''const flights=[
+          {date:"23 out.",name:"Turkish Airlines TK1780",route:"Lisboa LIS → Istambul IST",time:"05h55–12h40",code:"",note:"Horário confirmado no itinerário. Valor pago por Sandro: 119,33 €. Número de reserva não visível no documento enviado."},
+          {date:"23 out.",name:"Turkish Airlines TK320",route:"Istambul IST → Ashgabat ASB",time:"14h15–19h50",code:"",note:"Horário confirmado no itinerário. Incluído nos 119,33 € pagos por Sandro. Número de reserva não visível no documento enviado."},
+          {date:"2 nov.",name:"Centrum Air C6219",route:"Tashkent TAS → Bishkek BSZ",time:"11h00–13h10",code:"SGIMOV",note:"Booking SGIMOV. Valor pago por Sandro: 193,90 €. Parte da Marta: 96,95 €. <a href=\"./documentos/voo-2-nov-tashkent-bishkek.html\" target=\"_blank\" rel=\"noopener\">Ver bilhete ↗</a>"},
+          {date:"7 nov.",name:"Turkish Airlines TK347",route:"Bishkek BSZ → Istambul IST",time:"03h50–06h55",code:"",note:"Horário confirmado no itinerário. Valor pago por Sandro: 94,80 €. Número de reserva não visível no documento enviado."},
+          {date:"7 nov.",name:"Turkish Airlines TK1755",route:"Istambul IST → Lisboa LIS",time:"08h25–10h35",code:"",note:"Horário confirmado no itinerário. Incluído nos 94,80 € pagos por Sandro. Número de reserva não visível no documento enviado."}
+          ];'''
+          s = re.sub(r'const flights=\[[\s\S]*?\n\];', flights, s, count=1)
+
+          # Dia a dia: voos confirmados, sem referências a folhas anteriores.
+          replacements = {
+            'Horário indicado no itinerário; confirmar no bilhete.': 'Horário confirmado no itinerário. Valor pago por Sandro: 119,33 €.',
+            'Chegada prevista às 19h50. Confirmar horas locais e bilhete.': 'Horário confirmado no itinerário. Incluído nos 119,33 € pagos por Sandro.',
+            'Horário transcrito do Excel; confirmar no bilhete e no Flightradar24.': 'Horário confirmado no itinerário. Valor pago por Sandro: 94,80 €.',
+            'Horário transcrito do Excel; confirmar ligação, terminal e bagagem.': 'Horário confirmado no itinerário. Incluído nos 94,80 € pagos por Sandro.',
+          }
+          for old, new in replacements.items():
+              s = s.replace(old, new)
+
+          s = re.sub(r'(\["11h00–13h10","Voo C6219 · Tashkent \(TAS\) → Bishkek \(BSZ\)",")[^"]*("\],)',
+                      r'\1Booking SGIMOV · valor pago por Sandro: 193,90 € · parte da Marta: 96,95 €.\2', s)
+
+          # Comboios: informação já confirmada, sem menção ao Excel.
+          s = s.replace('Excel:', 'Bilhete confirmado:')
+          s = s.replace('Horário e preço são dados do Excel, não confirmação de bilhete.', 'Horário e preço confirmados.')
+          s = s.replace('preços vieram do Excel inicial, não estão confirmados nos bilhetes e devem ser substituídos quando houver documentos.', 'preços confirmados nos bilhetes.')
+          s = s.replace('295 € por pessoa (estimativa do Excel)', '408,03 € pagos por Sandro')
+          s = s.replace('O Excel inicial tinha um orçamento global de 295 € para voos e assinalava 78 € para Tashkent–Bishkek. Vou usar os 295 € como previsão total de todos os voos, incluindo esses 78 €, e não somar os 78 € novamente.', 'Os valores reais dos voos de Sandro estão confirmados nos itinerários: 408,03 € no total.')
+          s = s.replace('Avião 32Q indicado no Excel; duração indicada 4h45.', 'Horário confirmado no itinerário. Valor pago por Sandro: 119,33 €.')
+          s = s.replace('Avião 32Q indicado no Excel; duração indicada 3h35.', 'Horário confirmado no itinerário. Incluído nos 119,33 € pagos por Sandro.')
+          s = s.replace('Avião 32Q indicado no Excel; verificar duração/horas locais.', 'Horário confirmado no itinerário. Valor pago por Sandro: 94,80 €.')
+          s = s.replace('Avião 32Q indicado no Excel; ligação indicada de 1h30.', 'Horário confirmado no itinerário. Incluído nos 94,80 € pagos por Sandro.')
+          s = s.replace('A folha também anota “Centrum Air 219” e 1h10 de duração. Confirmar o número, hora local e bilhete original.', 'Booking SGIMOV. Horário confirmado: 11h00–13h10. Valor pago por Sandro: 193,90 €. Parte da Marta: 96,95 %.'.replace('96,95 %','96,95 €'))
+
+          # Despesas: substituir a previsão antiga de voos pelo valor real pago por Sandro.
+          budget_row = '<tr><td><span class="budget-dot flight"></span>Voos</td><td>408,03 € pagos por Sandro</td><td>Turkish Airlines: 119,33 € (Lisboa → Istambul → Ashgabat) + 94,80 € (Bishkek → Istambul → Lisboa) + Centrum Air C6219: 193,90 €. Total real pago por Sandro: 408,03 €. A parte da Marta no C6219 é 96,95 €. Os bilhetes Turkish da Marta são diferentes e não entram neste acerto.</td></tr>'
+          s = re.sub(r'<tr><td><span class="budget-dot flight"></span>Voos</td><td>.*?</td><td>.*?</td></tr>', budget_row, s, count=1, flags=re.S)
 
           js = '''
           <script>
@@ -86,11 +126,12 @@ jobs:
           if 'data-menu-fixed-script' not in s:
               js=js.replace('<script>','<script data-menu-fixed-script="1">',1)
               s=s.replace('</body>',js+'\n</body>',1)
+
           p.write_text(s,encoding='utf-8')
-      - name: Commit menu change
+      - name: Commit menu and confirmed data
         run: |
           git config user.name "MS Quistões Bot"
           git config user.email "actions@users.noreply.github.com"
           git add index.html
-          git diff --cached --quiet || git commit -m "Fixar Despesas e Área privada em Logística"
+          git diff --cached --quiet || git commit -m "Actualizar transportes despesas e dia a dia"
           git push
