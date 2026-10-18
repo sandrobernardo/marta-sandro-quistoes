@@ -24,12 +24,7 @@ jobs:
               s2, n2 = re.subn(pattern2, group, s, count=1, flags=re.S)
               if n2 == 0:
                   raise SystemExit('grupo Logística não encontrado')
-              s = s2
-          else:
-              s = s2
-          # Remove any duplicate standalone Despesas immediately following Logística.
-          s = re.sub(r'(</div></div>)\s*<button data-page="money">Despesas</button>', r'\1', s, count=1)
-          p.write_text(s, encoding='utf-8')
+          p.write_text(s2, encoding='utf-8')
       - name: Improve mobile menu layout
         shell: python
         run: |
