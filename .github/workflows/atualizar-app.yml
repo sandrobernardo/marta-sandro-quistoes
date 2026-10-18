@@ -1,35 +1,24 @@
-name: Atualizar app
+name: Limpar secção Preparar
 on:
   push:
     branches: [main]
 permissions:
   contents: write
 jobs:
-  atualizar:
+  limpar:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Atualizar mala e documentos
+      - name: Restaurar versão sem Preparar
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          p=Path('index.html')
-          s=p.read_text(encoding='utf-8')
-          backup=Path('index.backup-20261017.html')
-          if not backup.exists():
-              backup.write_text(s,encoding='utf-8')
-          if 'data-page="preparar"' not in s:
-              s=s.replace('<button data-page="money">Despesas</button>','<button data-page="money">Despesas</button><button data-page="preparar">Preparar</button>')
-          if 'id="preparar"' not in s:
-              section='''<section id="preparar" class="page"><div class="section-head"><div><div class="kicker">Preparação</div><h2>Mala &amp; documentos</h2><p class="sub">Tudo o que precisas antes de partir.</p></div></div><div class="card full"><div class="card-body"><h3>Lista da mala</h3><label><input type="checkbox"> 16–18 cuecas</label><label><input type="checkbox"> 16–18 pares de meias</label><label><input type="checkbox"> 10–12 T-shirts</label><label><input type="checkbox"> 3–4 camisolas de manga comprida</label><label><input type="checkbox"> 4 pares de calças</label><label><input type="checkbox"> 1 calça confortável</label><label><input type="checkbox"> 1 casaco quente</label><label><input type="checkbox"> 1 impermeável / corta-vento</label><label><input type="checkbox"> 1 polar / camada quente</label><label><input type="checkbox"> 1 conjunto de roupa térmica</label><label><input type="checkbox"> 3–4 pares de meias quentes</label><label><input type="checkbox"> 1 pijama</label><label><input type="checkbox"> 2 pares de calçado</label><label><input type="checkbox"> Chinelos</label><label><input type="checkbox"> Gorro</label><label><input type="checkbox"> Luvas</label><label><input type="checkbox"> Cachecol / gola</label><label><input type="checkbox"> Mochila de dia</label><label><input type="checkbox"> Powerbank + carregadores</label><label><input type="checkbox"> Adaptador universal</label><label><input type="checkbox"> Documentos + cópias</label><label><input type="checkbox"> Dinheiro + cartões</label><label><input type="checkbox"> Higiene + medicamentos</label><label><input type="checkbox"> Saco para roupa suja</label><label><input type="checkbox"> Saco impermeável</label><div class="notice"><strong>Turquemenistão:</strong> roupa leve para o dia, manga comprida e casaco para a noite.<br><strong>Uzbequistão:</strong> roupa confortável para caminhar, casaco e impermeável.<br><strong>Quirguistão:</strong> casaco, polar, térmica, gorro, luvas, cachecol/gola, meias quentes e calçado impermeável.<br><strong>Song-Kul:</strong> levar o equipamento de frio para a tour.</div></div></div><div class="section-head" style="margin-top:22px"><div><div class="kicker">Documentos</div><h2>Vistos</h2></div></div><div class="cards"><article class="card"><div class="card-body"><div class="kicker">VISA · Marta</div><h3>ETU276822126</h3><a class="btn dark" href="./documentos/visa-marta.pdf" target="_blank">Abrir documento</a><a class="btn" href="./documentos/visa-marta.pdf" download>Download</a></div></article><article class="card"><div class="card-body"><div class="kicker">VISA · Sandro</div><h3>ETU••••6826</h3></div></article></div><div class="warn" style="margin-top:16px"><strong>Chegada à fronteira — pagamento em dinheiro (USD)</strong><br>Teste à COVID: 33 USD<br>Taxa alfandegária: 14 USD<br><strong>Total: 47 USD por pessoa.</strong></div></section>'''
-              s=s.replace('</main>',section+'</main>')
-          p.write_text(s,encoding='utf-8')
-          PY
-      - name: Publicar alterações
+          if [ -f index.backup-20261017.html ]; then
+            cp index.backup-20261017.html index.html
+          fi
+      - name: Publicar
         run: |
           git config user.name "MS Quistões Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add index.html index.backup-20261017.html
+          git add index.html
           git diff --cached --quiet && exit 0
-          git commit -m "Adicionar mala, documentos e custos da fronteira"
+          git commit -m "Remover secção Preparar"
           git push
