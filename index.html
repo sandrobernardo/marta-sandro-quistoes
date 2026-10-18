@@ -58,9 +58,6 @@ main{max-width:1180px;padding:25px 22px 56px}
 
 .navgroup{position:relative;flex:0 0 auto}.navgroup-toggle{background:transparent!important;color:var(--muted)!important}.navgroup-toggle span{margin-left:4px;color:var(--gold)}.navsubmenu{display:none;position:absolute;top:calc(100% + 4px);left:0;min-width:170px;padding:6px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 25px #102b3f1c;z-index:30}.navgroup:hover .navsubmenu,.navgroup:focus-within .navsubmenu,.navgroup.open .navsubmenu{display:grid}nav .navsubmenu button{width:100%;text-align:left;border-radius:7px;color:var(--ink);padding:10px}nav{align-items:center;overflow:visible;flex-wrap:wrap}@media(max-width:700px){nav{flex-wrap:nowrap;overflow-x:auto}.navsubmenu{position:fixed}.navgroup:hover .navsubmenu{display:none}.navgroup.open .navsubmenu{display:grid}}
 .home-today-heading{margin-top:28px}.home-today-preview{margin-bottom:22px}.home-today-preview .day-card{margin-top:0}.home-today-preview .notice{margin-bottom:0}
-
-/* Mobile menu fix */
-@media(max-width:720px){nav{overflow-x:auto;overflow-y:visible;justify-content:flex-start}nav button{flex:0 0 auto}.navgroup{flex:0 0 auto}.navsubmenu{min-width:205px;max-width:calc(100vw - 24px);left:0}.navgroup.open .navsubmenu{display:grid}}
 </style></head>
 <body>
 <header class="hero"><div class="hero-inner"><div class="eyebrow">Diário de viagem · Outono 2026</div><h1>Marta e Sandro<br>pelos Quistões</h1><p>Turquemenistão, Uzbequistão e Quirguistão. O roteiro, as deslocações e as reservas organizados por dia.</p><div class="hero-meta"><span class="pill">23 outubro — 7 novembro</span><span class="pill">Turquemenistão · Uzbequistão · Quirguistão</span><span class="pill">Guia pessoal</span></div></div></header>
@@ -68,7 +65,8 @@ main{max-width:1180px;padding:25px 22px 56px}
 <button class="active" data-page="home">Início</button>
 <div class="navgroup"><button type="button" class="navgroup-toggle">Roteiro <span>⌄</span></button><div class="navsubmenu"><button data-page="today">Hoje</button><button data-page="days">Dia a dia</button></div></div>
 <div class="navgroup"><button type="button" class="navgroup-toggle">Descobrir <span>⌄</span></button><div class="navsubmenu"><button data-page="places">O que visitar</button><button data-page="food">Onde comer</button><button data-page="challenges">Desafios</button></div></div>
-<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu"><button data-page="stays">Alojamentos</button><button data-page="transport">Transportes</button><button data-page="notes">Reservas &amp; notas</button><button data-page="money">Despesas</button><button data-page="private">Área privada</button></div></div>
+<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu"><button data-page="stays">Alojamentos</button><button data-page="transport">Transportes</button><button data-page="notes">Reservas & notas</button></div></div>
+<button data-page="money">Despesas</button>
 </nav></div>
 <main>
 <section id="home" class="page active">
