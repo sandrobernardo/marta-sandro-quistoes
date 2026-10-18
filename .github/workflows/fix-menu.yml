@@ -9,25 +9,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Move Despesas into Logística
+      - name: Add Área privada to Logística
         shell: python
         run: |
           from pathlib import Path
+          import re
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          old = '<button data-page="money">Despesas</button>\n'
-          new = '<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu"><button data-page="stays">Alojamentos</button><button data-page="transport">Transportes</button><button data-page="notes">Reservas & notas</button><button data-page="money">Despesas</button></div></div>\n'
-          if old not in s:
-              raise SystemExit('menu já alterado ou estrutura diferente')
-          # remove the existing standalone Logística group, then replace it with the group containing Despesas
-          import re
-          s = re.sub(r'<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu"><button data-page="stays">Alojamentos</button><button data-page="transport">Transportes</button><button data-page="notes">Reservas & notas</button></div></div>\n', '', s, count=1)
-          s = s.replace(old, new, 1)
-          p.write_text(s, encoding='utf-8')
+          private = '<button data-page="private">Área privada</button>'
+          if private not in s:
+              pattern = r'(<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu">.*?<button data-page="money">Despesas</button>)(</div></div>)'
+              s2, n = re.subn(pattern, r'\1' + private + r'\2', s, count=1, flags=re.S)
+              if n == 0:
+                  raise SystemExit('grupo Logística não encontrado')
+              p.write_text(s2, encoding='utf-8')
       - name: Commit menu change
         run: |
           git config user.name "MS Quistões Bot"
           git config user.email "actions@users.noreply.github.com"
           git add index.html
-          git diff --cached --quiet || git commit -m "Colocar Despesas dentro de Logística"
+          git diff --cached --quiet || git commit -m "Adicionar Área privada à Logística"
           git push
