@@ -9,13 +9,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Corrigir menu Logística
+      - name: Corrigir estrutura e menu Logística
         shell: python
         run: |
           from pathlib import Path
           import re
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
+
+          # Garantir que Despesas e Área privada são submenus de Logística.
+          group = '''<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu"><button data-page="stays">Alojamentos</button><button data-page="transport">Transportes</button><button data-page="notes">Reservas &amp; notas</button><button data-page="money">Despesas</button><button data-page="private">Área privada</button></div></div>'''
+          pattern = r'<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu">.*?</div></div>\s*<button data-page="money">Despesas</button>'
+          s2, n = re.subn(pattern, group, s, count=1, flags=re.S)
+          if n:
+              s = s2
+          else:
+              # Se já estiver dentro do submenu, apenas garantir Área privada.
+              old_group = r'<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu">.*?</div></div>'
+              m = re.search(old_group, s, flags=re.S)
+              if m and 'data-page="private"' not in m.group(0):
+                  fixed = m.group(0).replace('</div></div>', '<button data-page="private">Área privada</button></div></div>')
+                  s = s[:m.start()] + fixed + s[m.end():]
+
           css = '''
           /* Mobile logistics menu */
           .navgroup{position:relative;flex:0 0 auto}
@@ -37,6 +52,7 @@ jobs:
           '''
           if '/* Mobile logistics menu */' not in s:
               s=s.replace('</style>', css+'\n</style>', 1)
+
           js = '''
           <script>
           (()=>{
@@ -76,5 +92,5 @@ jobs:
           git config user.name "MS Quistões Bot"
           git config user.email "actions@users.noreply.github.com"
           git add index.html
-          git diff --cached --quiet || git commit -m "Corrigir abertura e fecho do menu Logística"
+          git diff --cached --quiet || git commit -m "Fixar Despesas e Área privada em Logística"
           git push
