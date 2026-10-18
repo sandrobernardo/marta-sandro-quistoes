@@ -9,36 +9,72 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Fix Logística menu
+      - name: Corrigir menu Logística
         shell: python
         run: |
           from pathlib import Path
           import re
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          group = '''<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu"><button data-page="stays">Alojamentos</button><button data-page="transport">Transportes</button><button data-page="notes">Reservas &amp; notas</button><button data-page="money">Despesas</button><button data-page="private">Área privada</button></div></div>'''
-          pattern = r'<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu">.*?</div></div>\s*<button data-page="money">Despesas</button>'
-          s2, n = re.subn(pattern, group, s, count=1, flags=re.S)
-          if n == 0:
-              pattern2 = r'<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu">.*?</div></div>'
-              s2, n2 = re.subn(pattern2, group, s, count=1, flags=re.S)
-              if n2 == 0:
-                  raise SystemExit('grupo Logística não encontrado')
-          p.write_text(s2, encoding='utf-8')
-      - name: Improve mobile menu layout
-        shell: python
-        run: |
-          from pathlib import Path
-          p = Path('index.html')
-          s = p.read_text(encoding='utf-8')
-          css = '''\n/* Mobile menu fix */\n@media(max-width:720px){nav{overflow-x:auto;overflow-y:visible;justify-content:flex-start}nav button{flex:0 0 auto}.navgroup{flex:0 0 auto}.navsubmenu{min-width:205px;max-width:calc(100vw - 24px);left:0}.navgroup.open .navsubmenu{display:grid}}\n'''
-          if '/* Mobile menu fix */' not in s:
-              s = s.replace('</style>', css + '</style>', 1)
-          p.write_text(s, encoding='utf-8')
+          css = '''
+          /* Mobile logistics menu */
+          .navgroup{position:relative;flex:0 0 auto}
+          .navgroup-toggle{position:relative;z-index:41;background:transparent!important;color:var(--muted)!important}
+          .navgroup-toggle span{margin-left:4px;color:var(--gold)}
+          .navsubmenu{display:none;position:absolute;top:calc(100% + 6px);left:0;min-width:210px;width:max-content;max-width:calc(100vw - 24px);padding:7px;background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 30px rgba(16,43,63,.18);z-index:40}
+          .navgroup.open .navsubmenu{display:grid}
+          nav .navsubmenu button{width:100%;text-align:left;border-radius:9px;color:var(--ink);padding:11px 13px;min-height:42px;background:transparent!important;white-space:nowrap}
+          nav .navsubmenu button:hover,nav .navsubmenu button:focus{background:#eef1eb!important;color:var(--ink)!important}
+          @media(max-width:720px){
+            nav{overflow-x:auto;overflow-y:visible;justify-content:flex-start}
+            nav button{flex:0 0 auto}
+            .navgroup{position:static;flex:0 0 auto}
+            .navgroup .navsubmenu{position:fixed;top:calc(var(--nav-bottom, 0px) + 6px);left:12px;right:12px;width:auto;min-width:0;max-width:none;max-height:calc(100vh - var(--nav-bottom, 0px) - 30px);overflow:auto}
+            .navgroup.open .navsubmenu{display:grid}
+            .navgroup:hover .navsubmenu,.navgroup:focus-within .navsubmenu{display:none}
+            .navgroup.open:hover .navsubmenu,.navgroup.open:focus-within .navsubmenu{display:grid}
+          }
+          '''
+          if '/* Mobile logistics menu */' not in s:
+              s=s.replace('</style>', css+'\n</style>', 1)
+          js = '''
+          <script>
+          (()=>{
+            function closeMenus(){document.querySelectorAll('.navgroup.open').forEach(g=>g.classList.remove('open'));}
+            function installMenus(){
+              const nav=document.querySelector('.navwrap');
+              if(nav) document.documentElement.style.setProperty('--nav-bottom',nav.getBoundingClientRect().bottom+'px');
+              document.querySelectorAll('.navgroup-toggle').forEach(old=>{
+                if(old.dataset.menuFixed==='1') return;
+                const b=old.cloneNode(true); b.dataset.menuFixed='1'; old.replaceWith(b);
+                b.addEventListener('click',e=>{
+                  e.preventDefault(); e.stopPropagation();
+                  const group=b.closest('.navgroup');
+                  const opening=!group.classList.contains('open');
+                  closeMenus();
+                  if(opening) group.classList.add('open');
+                });
+              });
+              document.querySelectorAll('.navsubmenu button[data-page]').forEach(b=>{
+                if(b.dataset.submenuFixed==='1') return;
+                b.dataset.submenuFixed='1';
+                b.addEventListener('click',()=>setTimeout(closeMenus,0));
+              });
+            }
+            document.addEventListener('click',e=>{if(!e.target.closest('.navgroup')) closeMenus();});
+            window.addEventListener('resize',installMenus);
+            if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',installMenus); else installMenus();
+          })();
+          </script>
+          '''
+          if 'data-menu-fixed-script' not in s:
+              js=js.replace('<script>','<script data-menu-fixed-script="1">',1)
+              s=s.replace('</body>',js+'\n</body>',1)
+          p.write_text(s,encoding='utf-8')
       - name: Commit menu change
         run: |
           git config user.name "MS Quistões Bot"
           git config user.email "actions@users.noreply.github.com"
           git add index.html
-          git diff --cached --quiet || git commit -m "Corrigir menu Logística e área privada"
+          git diff --cached --quiet || git commit -m "Corrigir abertura e fecho do menu Logística"
           git push
