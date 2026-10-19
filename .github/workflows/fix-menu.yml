@@ -1,4 +1,4 @@
-name: Fix menu
+name: Remove private area
 on:
   push:
     branches: [main]
@@ -7,89 +7,35 @@ on:
 permissions:
   contents: write
 jobs:
-  fix:
+  cleanup:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Corrigir menu, dados confirmados e área privada
+      - name: Remove private area from app
         shell: python
         run: |
           from pathlib import Path
           import re
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-
-          # Garantir que Área privada existe dentro do menu Logística.
-          if 'data-page="private"' not in s:
-              group = '''<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu"><button data-page="stays">Alojamentos</button><button data-page="transport">Transportes</button><button data-page="notes">Reservas &amp; notas</button><button data-page="money">Despesas</button><button data-page="private">Área privada</button></div></div>'''
-              pattern = r'<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu">.*?</div></div>\s*<button data-page="money">Despesas</button>'
-              s, n = re.subn(pattern, group, s, count=1, flags=re.S)
-
-          # Área privada: o botão do menu chama go('private'). A versão anterior não tinha
-          # qualquer <section id="private">, por isso ficava literalmente uma página vazia.
-          if '<section id="private"' not in s:
-              private_section = r'''<section id="private" class="page">
-<div class="section-head"><div><div class="kicker">Acesso protegido</div><h2>Área privada</h2><p class="sub">Documentos da viagem guardados nesta área. O conteúdo só aparece depois de introduzir o código.</p></div></div>
-<div id="privateLocked" class="card full"><div class="card-body" style="max-width:520px;margin:auto"><h3>Introduzir código</h3><p class="muted">Esta área não aparece na navegação pública dos documentos.</p><label for="privateCode">Código de acesso</label><input id="privateCode" type="password" inputmode="text" autocomplete="off" placeholder="Código"><div class="actions"><button class="btn dark" type="button" id="privateEnter">Entrar</button></div><p id="privateError" class="warn" style="display:none;margin-top:12px">Código incorrecto.</p></div></div>
-<div id="privateContent" style="display:none">
-<div class="notice" style="margin-bottom:15px"><strong>Área privada desbloqueada.</strong> Estes documentos não aparecem na área pública da aplicação. O código de acesso é <strong>MSQ403</strong>.</div>
-<div class="cards">
-<div class="card full"><div class="card-body"><h3>Bilhetes de comboio — Uzbequistão</h3><p class="muted">Os três PDFs recebidos com os bilhetes/horários confirmados.</p><div class="actions">
-<a class="btn dark" href="./pdfs/ХИВА-БУХОРО%201%202026-10-18.pdf" target="_blank" rel="noopener">Khiva → Bukhara · 30 out.</a>
-<a class="btn dark" href="./pdfs/БУХОРО%201-САМАРКАНД%202026-10-18.pdf" target="_blank" rel="noopener">Bukhara → Samarcanda · 31 out.</a>
-<a class="btn dark" href="./pdfs/САМАРКАНД-ТОШКЕНТ%20ЖАНУБИИ%CC%86%202026-10-18.pdf" target="_blank" rel="noopener">Samarcanda → Tashkent · 1 nov.</a>
-</div></div></div>
-<div class="card full"><div class="card-body"><h3>Documentos adicionais</h3><p class="muted">A área está preparada para os restantes PDFs da viagem (voos, hotéis, tour e vouchers). Não serão mostrados como documentos públicos.</p><div class="actions"><a class="btn" href="./documentos/" target="_blank" rel="noopener">Abrir área de documentos ↗</a></div></div></div>
-</div>
-<div class="actions" style="margin-top:15px"><button class="btn" type="button" id="privateLock">Bloquear área privada</button></div>
-</div></section>
-'''
-              s = s.replace('</main>', private_section + '</main>', 1)
-
-          # Estilo da área privada.
-          if '/* Private area */' not in s:
-              css = '''
-/* Private area */
-#private .card{box-shadow:0 2px 10px rgba(16,43,63,.06)}
-#private .btn.dark{cursor:pointer}
-#private .warn{margin:0}
-'''
-              s = s.replace('</style>', css + '\n</style>', 1)
-
-          # Script de acesso. Não usar prompt() nem navegação para outra página:
-          # tudo acontece dentro da mesma app/link.
-          if 'data-private-area="1"' not in s:
-              js = r'''<script data-private-area="1">
-(()=>{
-  const CODE='MSQ403';
-  function initPrivate(){
-    const enter=document.getElementById('privateEnter');
-    const input=document.getElementById('privateCode');
-    const err=document.getElementById('privateError');
-    const locked=document.getElementById('privateLocked');
-    const content=document.getElementById('privateContent');
-    const lock=document.getElementById('privateLock');
-    if(!enter||!input||!locked||!content) return;
-    const unlock=()=>{
-      if(input.value.trim()===CODE){
-        locked.style.display='none'; content.style.display='block'; err.style.display='none'; input.value='';
-      }else{err.style.display='block';input.focus();}
-    };
-    enter.onclick=unlock;
-    input.onkeydown=e=>{if(e.key==='Enter') unlock();};
-    if(lock) lock.onclick=()=>{content.style.display='none';locked.style.display='block';input.value='';input.focus();};
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initPrivate); else initPrivate();
-})();
-</script>
-'''
-              s = s.replace('</body>', js + '</body>', 1)
-
+          # Remove the private navigation button wherever it occurs.
+          s = re.sub(r'<button[^>]*data-page="private"[^>]*>\s*Área privada\s*</button>', '', s, flags=re.I)
+          # Remove the complete private section.
+          s = re.sub(r'\s*<section id="private"\b.*?</section>\s*', '\n', s, count=1, flags=re.S|re.I)
+          # Remove the private-area script and private CSS marker.
+          s = re.sub(r'\s*<script[^>]*data-private-area="1"[^>]*>.*?</script>\s*', '\n', s, count=1, flags=re.S|re.I)
+          s = re.sub(r'\n?/\* Private area \*/.*?(?=</style>)', '\n', s, count=1, flags=re.S|re.I)
           p.write_text(s, encoding='utf-8')
-      - name: Commit menu, confirmed data and private area
+          for f in ['private/khiva-bukhara.pdf.b64','private/bukhara-samarkand.pdf.b64','private/samarkand-tashkent.pdf.b64']:
+              Path(f).unlink(missing_ok=True)
+      - name: Remove private workflow files
+        run: |
+          rm -f .github/workflows/fix-private-area.yml
+          rm -f .github/workflows/fix-menu.yml
+      - name: Commit cleanup
         run: |
           git config user.name "MS Quistões Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add index.html
-          git diff --cached --quiet || git commit -m "Corrigir área privada na app"
+          git add -A
+          git diff --cached --quiet || git commit -m "Remover área privada"
           git push
