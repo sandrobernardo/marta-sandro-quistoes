@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Corrigir estrutura menu e informação confirmada
+      - name: Corrigir menu e dados confirmados
         shell: python
         run: |
           from pathlib import Path
@@ -24,12 +24,6 @@ jobs:
           s2, n = re.subn(pattern, group, s, count=1, flags=re.S)
           if n:
               s = s2
-          else:
-              old_group = r'<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu">.*?</div></div>'
-              m = re.search(old_group, s, flags=re.S)
-              if m and 'data-page="private"' not in m.group(0):
-                  fixed = m.group(0).replace('</div></div>', '<button data-page="private">Área privada</button></div></div>')
-                  s = s[:m.start()] + fixed + s[m.end():]
 
           css = '''
           /* Mobile logistics menu */
@@ -53,6 +47,7 @@ jobs:
           if '/* Mobile logistics menu */' not in s:
               s=s.replace('</style>', css+'\n</style>', 1)
 
+          # Voos confirmados dos documentos enviados.
           flights = '''const flights=[
           {date:"23 out.",name:"Turkish Airlines TK1780",route:"Lisboa LIS → Istambul IST",time:"05h55–12h40",code:"",note:"Horário confirmado no itinerário. Valor pago por Sandro: 119,33 €. Número de reserva não visível no documento enviado."},
           {date:"23 out.",name:"Turkish Airlines TK320",route:"Istambul IST → Ashgabat ASB",time:"14h15–19h50",code:"",note:"Horário confirmado no itinerário. Incluído nos 119,33 € pagos por Sandro. Número de reserva não visível no documento enviado."},
@@ -62,33 +57,43 @@ jobs:
           ];'''
           s = re.sub(r'const flights=\[[\s\S]*?\n\];', flights, s, count=1)
 
+          # Dia a dia: mesmos horários e valores confirmados.
           replacements = {
             'Horário indicado no itinerário; confirmar no bilhete.': 'Horário confirmado no itinerário. Valor pago por Sandro: 119,33 €.',
             'Chegada prevista às 19h50. Confirmar horas locais e bilhete.': 'Horário confirmado no itinerário. Incluído nos 119,33 € pagos por Sandro.',
             'Horário transcrito do Excel; confirmar no bilhete e no Flightradar24.': 'Horário confirmado no itinerário. Valor pago por Sandro: 94,80 €.',
             'Horário transcrito do Excel; confirmar ligação, terminal e bagagem.': 'Horário confirmado no itinerário. Incluído nos 94,80 € pagos por Sandro.',
+            'Horários e ligações do informação anterior mantidos; pontos turísticos e tempos de visita são sugestões a afinar.': 'Horários e ligações confirmados; pontos turísticos e tempos de visita são sugestões a afinar.',
           }
           for old, new in replacements.items():
               s = s.replace(old, new)
           s = re.sub(r'(\["11h00–13h10","Voo C6219 · Tashkent \(TAS\) → Bishkek \(BSZ\)",")[^"]*("\],)', r'\1Booking SGIMOV · valor pago por Sandro: 193,90 € · parte da Marta: 96,95 €.\2', s)
 
-          # Informação dos comboios confirmada; retirar qualquer referência ao Excel.
+          # Comboios e valores já confirmados: retirar a linguagem antiga de estimativa/Excel.
           s = s.replace('Excel:', 'Bilhete confirmado:')
           s = s.replace('Horário e preço são dados do Excel, não confirmação de bilhete.', 'Horário e preço confirmados.')
           s = s.replace('preços vieram do Excel inicial, não estão confirmados nos bilhetes e devem ser substituídos quando houver documentos.', 'preços confirmados nos bilhetes.')
-          s = s.replace('295 € por pessoa (estimativa do Excel)', '408,03 € pagos por Sandro')
-          s = s.replace('O Excel inicial tinha um orçamento global de 295 € para voos e assinalava 78 € para Tashkent–Bishkek. Vou usar os 295 € como previsão total de todos os voos, incluindo esses 78 €, e não somar os 78 € novamente.', 'Os valores reais dos voos de Sandro estão confirmados nos itinerários: 408,03 € no total.')
           s = s.replace('Avião 32Q indicado no Excel; duração indicada 4h45.', 'Horário confirmado no itinerário. Valor pago por Sandro: 119,33 €.')
           s = s.replace('Avião 32Q indicado no Excel; duração indicada 3h35.', 'Horário confirmado no itinerário. Incluído nos 119,33 € pagos por Sandro.')
           s = s.replace('Avião 32Q indicado no Excel; verificar duração/horas locais.', 'Horário confirmado no itinerário. Valor pago por Sandro: 94,80 €.')
           s = s.replace('Avião 32Q indicado no Excel; ligação indicada de 1h30.', 'Horário confirmado no itinerário. Incluído nos 94,80 € pagos por Sandro.')
           s = s.replace('A folha também anota “Centrum Air 219” e 1h10 de duração. Confirmar o número, hora local e bilhete original.', 'Booking SGIMOV. Horário confirmado: 11h00–13h10. Valor pago por Sandro: 193,90 €. Parte da Marta: 96,95 €.')
 
+          # Despesas: voos reais de Sandro e acerto da Marta.
           budget_row = '<tr><td><span class="budget-dot flight"></span>Voos</td><td>408,03 € pagos por Sandro</td><td>Turkish Airlines: 119,33 € (Lisboa → Istambul → Ashgabat) + 94,80 € (Bishkek → Istambul → Lisboa) + Centrum Air C6219: 193,90 €. Total real pago por Sandro: 408,03 €. A parte da Marta no C6219 é 96,95 €. Os bilhetes Turkish da Marta são diferentes e não entram neste acerto.</td></tr>'
           s = re.sub(r'<tr><td><span class="budget-dot flight"></span>Voos</td><td>.*?</td><td>.*?</td></tr>', budget_row, s, count=1, flags=re.S)
 
-          # Garantir que não fica nenhum texto de origem desactualizado.
-          s = s.replace('Excel', 'informação anterior')
+          # Resumo actualizado para os valores reais de Sandro: substituição de 295 € por 408,03 € (+113,03 €).
+          s = s.replace('€2.425,24 / pessoa', '€2.538,27 / pessoa (Sandro)')
+          s = s.replace('€1.851,24 / pessoa', '€1.964,27 / pessoa (Sandro)')
+          s = s.replace('incluindo a previsão de 295 € para todos os voos.', 'incluindo os 408,03 € reais dos voos de Sandro.')
+          s = s.replace('O informação anterior é usado apenas para os valores previstos ainda sem confirmação; as reservas e documentos mais recentes prevalecem quando existem.', 'Os valores reais dos documentos e reservas confirmados prevalecem sobre qualquer previsão anterior.')
+          s = s.replace('Estes preços vieram do informação anterior inicial, não estão confirmados nos bilhetes e devem ser substituídos quando houver documentos.', 'Estes preços estão confirmados nos bilhetes.')
+          s = s.replace('Valor anotado no informação anterior inicial, ainda por confirmar em fontes oficiais e conforme os vistos efectivamente necessários.', 'Valor provisório de referência; confirmar nos portais oficiais conforme os vistos efectivamente necessários.')
+          s = s.replace('O informação anterior inicial previa 295 € para o conjunto dos voos; os 78 € de Tashkent–Bishkek estão incluídos nessa previsão e não são somados outra vez. Por enquanto, uso os 295 € como orçamento estimado por pessoa. Quando comprares os restantes bilhetes, substituímos a estimativa pelos preços reais.', 'Os voos de Sandro estão agora registados pelos valores reais dos itinerários: 408,03 €. O voo C6219 é dividido com a Marta, que tem de entregar 96,95 €. Os voos Turkish da Marta são diferentes e serão registados separadamente.')
+
+          # Não deixar qualquer referência literal ao Excel na aplicação.
+          s = s.replace('Excel', 'registo anterior')
 
           js = '''
           <script>
