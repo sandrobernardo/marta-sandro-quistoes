@@ -1,0 +1,33 @@
+name: Fix private area
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-private-area.yml'
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add private area
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          if 'id="private"' not in s:
+              section='''<section id="private" class="page"><div class="section-head"><div><div class="kicker">Documentos protegidos</div><h2>Área privada</h2><p class="sub">Documentos da viagem, acessíveis apenas depois do código.</p></div></div><div class="card full"><div class="card-body"><div id="privateLogin"><h3>Acesso privado</h3><p class="muted">Introduz o código para abrir os documentos da viagem.</p><form id="privateForm"><label for="privateCode">Código de acesso</label><input id="privateCode" type="password" autocomplete="off" placeholder="Código"><div class="actions"><button class="btn dark" type="submit">Entrar</button></div><p id="privateError" class="warn" style="display:none;margin-top:12px">Código incorrecto.</p></form></div><div id="privateDocs" style="display:none"><div class="notice"><strong>Área privada desbloqueada.</strong><br>Documentos da viagem disponíveis abaixo.</div><div class="cards" style="margin-top:15px"><div class="card"><div class="card-body"><div class="kicker">30 OUT.</div><h3>Khiva → Bukhara</h3><p class="muted">Bilhete de comboio · 751MA · 07:10–10:38</p><a class="btn dark" href="./private/khiva-bukhara.pdf" target="_blank" rel="noopener">Abrir PDF</a></div></div><div class="card"><div class="card-body"><div class="kicker">31 OUT.</div><h3>Bukhara → Samarcanda</h3><p class="muted">Bilhete de comboio · 711FA · 05:21–07:38</p><a class="btn dark" href="./private/bukhara-samarkand.pdf" target="_blank" rel="noopener">Abrir PDF</a></div></div><div class="card"><div class="card-body"><div class="kicker">1 NOV.</div><h3>Samarcanda → Tashkent</h3><p class="muted">Bilhete de comboio · 081*GA · 05:29–09:40</p><a class="btn dark" href="./private/samarkand-tashkent.pdf" target="_blank" rel="noopener">Abrir PDF</a></div></div></div><div class="actions" style="margin-top:15px"><button class="btn" type="button" id="privateLock">Bloquear área privada</button></div></div></div></div></section>'''
+              marker='<section id="today" class="page">'
+              s=s.replace(marker,section+'\n'+marker,1)
+          script='''<script id="private-area-script">(()=>{const code="MSQ403";function initPrivate(){const form=document.getElementById("privateForm"),input=document.getElementById("privateCode"),err=document.getElementById("privateError"),login=document.getElementById("privateLogin"),docs=document.getElementById("privateDocs"),lock=document.getElementById("privateLock");if(!form||form.dataset.ready)return;form.dataset.ready="1";form.addEventListener("submit",e=>{e.preventDefault();if(input.value===code){login.style.display="none";docs.style.display="block";sessionStorage.setItem("msq_private","1");err.style.display="none";}else{err.style.display="block";input.select();}});lock?.addEventListener("click",()=>{sessionStorage.removeItem("msq_private");docs.style.display="none";login.style.display="block";input.value="";});if(sessionStorage.getItem("msq_private")==="1"){login.style.display="none";docs.style.display="block";}}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initPrivate);else initPrivate();})();</script>'''
+          if 'id="private-area-script"' not in s:
+              s=s.replace('</body>',script+'</body>',1)
+          p.write_text(s,encoding='utf-8')
+      - name: Commit
+        run: |
+          git config user.name "MS Quistões Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Corrigir área privada da app"
+          git push
