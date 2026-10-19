@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Corrigir menu e dados confirmados
+      - name: Corrigir menu, dados confirmados e área privada
         shell: python
         run: |
           from pathlib import Path
@@ -19,111 +19,77 @@ jobs:
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
 
-          group = '''<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu"><button data-page="stays">Alojamentos</button><button data-page="transport">Transportes</button><button data-page="notes">Reservas &amp; notas</button><button data-page="money">Despesas</button><button data-page="private">Área privada</button></div></div>'''
-          pattern = r'<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu">.*?</div></div>\s*<button data-page="money">Despesas</button>'
-          s2, n = re.subn(pattern, group, s, count=1, flags=re.S)
-          if n:
-              s = s2
+          # Garantir que Área privada existe dentro do menu Logística.
+          if 'data-page="private"' not in s:
+              group = '''<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu"><button data-page="stays">Alojamentos</button><button data-page="transport">Transportes</button><button data-page="notes">Reservas &amp; notas</button><button data-page="money">Despesas</button><button data-page="private">Área privada</button></div></div>'''
+              pattern = r'<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu">.*?</div></div>\s*<button data-page="money">Despesas</button>'
+              s, n = re.subn(pattern, group, s, count=1, flags=re.S)
 
-          css = '''
-          /* Mobile logistics menu */
-          .navgroup{position:relative;flex:0 0 auto}
-          .navgroup-toggle{position:relative;z-index:41;background:transparent!important;color:var(--muted)!important}
-          .navgroup-toggle span{margin-left:4px;color:var(--gold)}
-          .navsubmenu{display:none;position:absolute;top:calc(100% + 6px);left:0;min-width:210px;width:max-content;max-width:calc(100vw - 24px);padding:7px;background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 30px rgba(16,43,63,.18);z-index:40}
-          .navgroup.open .navsubmenu{display:grid}
-          nav .navsubmenu button{width:100%;text-align:left;border-radius:9px;color:var(--ink);padding:11px 13px;min-height:42px;background:transparent!important;white-space:nowrap}
-          nav .navsubmenu button:hover,nav .navsubmenu button:focus{background:#eef1eb!important;color:var(--ink)!important}
-          @media(max-width:720px){
-            nav{overflow-x:auto;overflow-y:visible;justify-content:flex-start}
-            nav button{flex:0 0 auto}
-            .navgroup{position:static;flex:0 0 auto}
-            .navgroup .navsubmenu{position:fixed;top:calc(var(--nav-bottom, 0px) + 6px);left:12px;right:12px;width:auto;min-width:0;max-width:none;max-height:calc(100vh - var(--nav-bottom, 0px) - 30px);overflow:auto}
-            .navgroup.open .navsubmenu{display:grid}
-            .navgroup:hover .navsubmenu,.navgroup:focus-within .navsubmenu{display:none}
-            .navgroup.open:hover .navsubmenu,.navgroup.open:focus-within .navsubmenu{display:grid}
-          }
-          '''
-          if '/* Mobile logistics menu */' not in s:
-              s=s.replace('</style>', css+'\n</style>', 1)
+          # Área privada: o botão do menu chama go('private'). A versão anterior não tinha
+          # qualquer <section id="private">, por isso ficava literalmente uma página vazia.
+          if '<section id="private"' not in s:
+              private_section = r'''<section id="private" class="page">
+<div class="section-head"><div><div class="kicker">Acesso protegido</div><h2>Área privada</h2><p class="sub">Documentos da viagem guardados nesta área. O conteúdo só aparece depois de introduzir o código.</p></div></div>
+<div id="privateLocked" class="card full"><div class="card-body" style="max-width:520px;margin:auto"><h3>Introduzir código</h3><p class="muted">Esta área não aparece na navegação pública dos documentos.</p><label for="privateCode">Código de acesso</label><input id="privateCode" type="password" inputmode="text" autocomplete="off" placeholder="Código"><div class="actions"><button class="btn dark" type="button" id="privateEnter">Entrar</button></div><p id="privateError" class="warn" style="display:none;margin-top:12px">Código incorrecto.</p></div></div>
+<div id="privateContent" style="display:none">
+<div class="notice" style="margin-bottom:15px"><strong>Área privada desbloqueada.</strong> Estes documentos não aparecem na área pública da aplicação. O código de acesso é <strong>MSQ403</strong>.</div>
+<div class="cards">
+<div class="card full"><div class="card-body"><h3>Bilhetes de comboio — Uzbequistão</h3><p class="muted">Os três PDFs recebidos com os bilhetes/horários confirmados.</p><div class="actions">
+<a class="btn dark" href="./pdfs/ХИВА-БУХОРО%201%202026-10-18.pdf" target="_blank" rel="noopener">Khiva → Bukhara · 30 out.</a>
+<a class="btn dark" href="./pdfs/БУХОРО%201-САМАРКАНД%202026-10-18.pdf" target="_blank" rel="noopener">Bukhara → Samarcanda · 31 out.</a>
+<a class="btn dark" href="./pdfs/САМАРКАНД-ТОШКЕНТ%20ЖАНУБИИ%CC%86%202026-10-18.pdf" target="_blank" rel="noopener">Samarcanda → Tashkent · 1 nov.</a>
+</div></div></div>
+<div class="card full"><div class="card-body"><h3>Documentos adicionais</h3><p class="muted">A área está preparada para os restantes PDFs da viagem (voos, hotéis, tour e vouchers). Não serão mostrados como documentos públicos.</p><div class="actions"><a class="btn" href="./documentos/" target="_blank" rel="noopener">Abrir área de documentos ↗</a></div></div></div>
+</div>
+<div class="actions" style="margin-top:15px"><button class="btn" type="button" id="privateLock">Bloquear área privada</button></div>
+</div></section>
+'''
+              s = s.replace('</main>', private_section + '</main>', 1)
 
-          # Voos confirmados dos documentos enviados.
-          flights = '''const flights=[
-          {date:"23 out.",name:"Turkish Airlines TK1780",route:"Lisboa LIS → Istambul IST",time:"05h55–12h40",code:"",note:"Horário confirmado no itinerário. Valor pago por Sandro: 119,33 €. Número de reserva não visível no documento enviado."},
-          {date:"23 out.",name:"Turkish Airlines TK320",route:"Istambul IST → Ashgabat ASB",time:"14h15–19h50",code:"",note:"Horário confirmado no itinerário. Incluído nos 119,33 € pagos por Sandro. Número de reserva não visível no documento enviado."},
-          {date:"2 nov.",name:"Centrum Air C6219",route:"Tashkent TAS → Bishkek BSZ",time:"11h00–13h10",code:"SGIMOV",note:"Booking SGIMOV. Valor pago por Sandro: 193,90 €. Parte da Marta: 96,95 €. Ver bilhete na documentação do dia."},
-          {date:"7 nov.",name:"Turkish Airlines TK347",route:"Bishkek BSZ → Istambul IST",time:"03h50–06h55",code:"",note:"Horário confirmado no itinerário. Valor pago por Sandro: 94,80 €. Número de reserva não visível no documento enviado."},
-          {date:"7 nov.",name:"Turkish Airlines TK1755",route:"Istambul IST → Lisboa LIS",time:"08h25–10h35",code:"",note:"Horário confirmado no itinerário. Incluído nos 94,80 € pagos por Sandro. Número de reserva não visível no documento enviado."}
-          ];'''
-          s = re.sub(r'const flights=\[[\s\S]*?\n\];', flights, s, count=1)
+          # Estilo da área privada.
+          if '/* Private area */' not in s:
+              css = '''
+/* Private area */
+#private .card{box-shadow:0 2px 10px rgba(16,43,63,.06)}
+#private .btn.dark{cursor:pointer}
+#private .warn{margin:0}
+'''
+              s = s.replace('</style>', css + '\n</style>', 1)
 
-          # Dia a dia: mesmos horários e valores confirmados.
-          replacements = {
-            'Horário indicado no itinerário; confirmar no bilhete.': 'Horário confirmado no itinerário. Valor pago por Sandro: 119,33 €.',
-            'Chegada prevista às 19h50. Confirmar horas locais e bilhete.': 'Horário confirmado no itinerário. Incluído nos 119,33 € pagos por Sandro.',
-            'Horário transcrito do Excel; confirmar no bilhete e no Flightradar24.': 'Horário confirmado no itinerário. Valor pago por Sandro: 94,80 €.',
-            'Horário transcrito do Excel; confirmar ligação, terminal e bagagem.': 'Horário confirmado no itinerário. Incluído nos 94,80 € pagos por Sandro.',
-            'Horários e ligações do informação anterior mantidos; pontos turísticos e tempos de visita são sugestões a afinar.': 'Horários e ligações confirmados; pontos turísticos e tempos de visita são sugestões a afinar.',
-          }
-          for old, new in replacements.items():
-              s = s.replace(old, new)
-          s = re.sub(r'(\["11h00–13h10","Voo C6219 · Tashkent \(TAS\) → Bishkek \(BSZ\)",")[^"]*("\],)', r'\1Booking SGIMOV · valor pago por Sandro: 193,90 € · parte da Marta: 96,95 €.\2', s)
+          # Script de acesso. Não usar prompt() nem navegação para outra página:
+          # tudo acontece dentro da mesma app/link.
+          if 'data-private-area="1"' not in s:
+              js = r'''<script data-private-area="1">
+(()=>{
+  const CODE='MSQ403';
+  function initPrivate(){
+    const enter=document.getElementById('privateEnter');
+    const input=document.getElementById('privateCode');
+    const err=document.getElementById('privateError');
+    const locked=document.getElementById('privateLocked');
+    const content=document.getElementById('privateContent');
+    const lock=document.getElementById('privateLock');
+    if(!enter||!input||!locked||!content) return;
+    const unlock=()=>{
+      if(input.value.trim()===CODE){
+        locked.style.display='none'; content.style.display='block'; err.style.display='none'; input.value='';
+      }else{err.style.display='block';input.focus();}
+    };
+    enter.onclick=unlock;
+    input.onkeydown=e=>{if(e.key==='Enter') unlock();};
+    if(lock) lock.onclick=()=>{content.style.display='none';locked.style.display='block';input.value='';input.focus();};
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initPrivate); else initPrivate();
+})();
+</script>
+'''
+              s = s.replace('</body>', js + '</body>', 1)
 
-          # Comboios e valores já confirmados: retirar a linguagem antiga de estimativa/Excel.
-          s = s.replace('Excel:', 'Bilhete confirmado:')
-          s = s.replace('Horário e preço são dados do Excel, não confirmação de bilhete.', 'Horário e preço confirmados.')
-          s = s.replace('preços vieram do Excel inicial, não estão confirmados nos bilhetes e devem ser substituídos quando houver documentos.', 'preços confirmados nos bilhetes.')
-          s = s.replace('Avião 32Q indicado no Excel; duração indicada 4h45.', 'Horário confirmado no itinerário. Valor pago por Sandro: 119,33 €.')
-          s = s.replace('Avião 32Q indicado no Excel; duração indicada 3h35.', 'Horário confirmado no itinerário. Incluído nos 119,33 € pagos por Sandro.')
-          s = s.replace('Avião 32Q indicado no Excel; verificar duração/horas locais.', 'Horário confirmado no itinerário. Valor pago por Sandro: 94,80 €.')
-          s = s.replace('Avião 32Q indicado no Excel; ligação indicada de 1h30.', 'Horário confirmado no itinerário. Incluído nos 94,80 € pagos por Sandro.')
-          s = s.replace('A folha também anota “Centrum Air 219” e 1h10 de duração. Confirmar o número, hora local e bilhete original.', 'Booking SGIMOV. Horário confirmado: 11h00–13h10. Valor pago por Sandro: 193,90 €. Parte da Marta: 96,95 €.')
-
-          # Despesas: voos reais de Sandro e acerto da Marta.
-          budget_row = '<tr><td><span class="budget-dot flight"></span>Voos</td><td>408,03 € pagos por Sandro</td><td>Turkish Airlines: 119,33 € (Lisboa → Istambul → Ashgabat) + 94,80 € (Bishkek → Istambul → Lisboa) + Centrum Air C6219: 193,90 €. Total real pago por Sandro: 408,03 €. A parte da Marta no C6219 é 96,95 €. Os bilhetes Turkish da Marta são diferentes e não entram neste acerto.</td></tr>'
-          s = re.sub(r'<tr><td><span class="budget-dot flight"></span>Voos</td><td>.*?</td><td>.*?</td></tr>', budget_row, s, count=1, flags=re.S)
-
-          # Resumo actualizado para os valores reais de Sandro: substituição de 295 € por 408,03 € (+113,03 €).
-          s = s.replace('€2.425,24 / pessoa', '€2.538,27 / pessoa (Sandro)')
-          s = s.replace('€1.851,24 / pessoa', '€1.964,27 / pessoa (Sandro)')
-          s = s.replace('incluindo a previsão de 295 € para todos os voos.', 'incluindo os 408,03 € reais dos voos de Sandro.')
-          s = s.replace('O informação anterior é usado apenas para os valores previstos ainda sem confirmação; as reservas e documentos mais recentes prevalecem quando existem.', 'Os valores reais dos documentos e reservas confirmados prevalecem sobre qualquer previsão anterior.')
-          s = s.replace('Estes preços vieram do informação anterior inicial, não estão confirmados nos bilhetes e devem ser substituídos quando houver documentos.', 'Estes preços estão confirmados nos bilhetes.')
-          s = s.replace('Valor anotado no informação anterior inicial, ainda por confirmar em fontes oficiais e conforme os vistos efectivamente necessários.', 'Valor provisório de referência; confirmar nos portais oficiais conforme os vistos efectivamente necessários.')
-          s = s.replace('O informação anterior inicial previa 295 € para o conjunto dos voos; os 78 € de Tashkent–Bishkek estão incluídos nessa previsão e não são somados outra vez. Por enquanto, uso os 295 € como orçamento estimado por pessoa. Quando comprares os restantes bilhetes, substituímos a estimativa pelos preços reais.', 'Os voos de Sandro estão agora registados pelos valores reais dos itinerários: 408,03 €. O voo C6219 é dividido com a Marta, que tem de entregar 96,95 €. Os voos Turkish da Marta são diferentes e serão registados separadamente.')
-
-          # Não deixar qualquer referência literal ao Excel na aplicação.
-          s = s.replace('Excel', 'registo anterior')
-
-          js = '''
-          <script>
-          (()=>{
-            function closeMenus(){document.querySelectorAll('.navgroup.open').forEach(g=>g.classList.remove('open'));}
-            function installMenus(){
-              const nav=document.querySelector('.navwrap');
-              if(nav) document.documentElement.style.setProperty('--nav-bottom',nav.getBoundingClientRect().bottom+'px');
-              document.querySelectorAll('.navgroup-toggle').forEach(old=>{
-                if(old.dataset.menuFixed==='1') return;
-                const b=old.cloneNode(true); b.dataset.menuFixed='1'; old.replaceWith(b);
-                b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const group=b.closest('.navgroup');const opening=!group.classList.contains('open');closeMenus();if(opening) group.classList.add('open');});
-              });
-              document.querySelectorAll('.navsubmenu button[data-page]').forEach(b=>{if(b.dataset.submenuFixed==='1') return;b.dataset.submenuFixed='1';b.addEventListener('click',()=>setTimeout(closeMenus,0));});
-            }
-            document.addEventListener('click',e=>{if(!e.target.closest('.navgroup')) closeMenus();});
-            window.addEventListener('resize',installMenus);
-            if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',installMenus); else installMenus();
-          })();
-          </script>
-          '''
-          if 'data-menu-fixed-script' not in s:
-              js=js.replace('<script>','<script data-menu-fixed-script="1">',1)
-              s=s.replace('</body>',js+'\n</body>',1)
-
-          p.write_text(s,encoding='utf-8')
-      - name: Commit menu and confirmed data
+          p.write_text(s, encoding='utf-8')
+      - name: Commit menu, confirmed data and private area
         run: |
           git config user.name "MS Quistões Bot"
           git config user.email "actions@users.noreply.github.com"
           git add index.html
-          git diff --cached --quiet || git commit -m "Actualizar transportes despesas e dia a dia"
+          git diff --cached --quiet || git commit -m "Corrigir área privada na app"
           git push
