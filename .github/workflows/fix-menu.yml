@@ -19,7 +19,6 @@ jobs:
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
 
-          # Garantir que Despesas e Área privada são submenus de Logística.
           group = '''<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu"><button data-page="stays">Alojamentos</button><button data-page="transport">Transportes</button><button data-page="notes">Reservas &amp; notas</button><button data-page="money">Despesas</button><button data-page="private">Área privada</button></div></div>'''
           pattern = r'<div class="navgroup"><button type="button" class="navgroup-toggle">Logística <span>⌄</span></button><div class="navsubmenu">.*?</div></div>\s*<button data-page="money">Despesas</button>'
           s2, n = re.subn(pattern, group, s, count=1, flags=re.S)
@@ -54,17 +53,15 @@ jobs:
           if '/* Mobile logistics menu */' not in s:
               s=s.replace('</style>', css+'\n</style>', 1)
 
-          # Dados de voos confirmados a partir dos itinerários enviados.
           flights = '''const flights=[
           {date:"23 out.",name:"Turkish Airlines TK1780",route:"Lisboa LIS → Istambul IST",time:"05h55–12h40",code:"",note:"Horário confirmado no itinerário. Valor pago por Sandro: 119,33 €. Número de reserva não visível no documento enviado."},
           {date:"23 out.",name:"Turkish Airlines TK320",route:"Istambul IST → Ashgabat ASB",time:"14h15–19h50",code:"",note:"Horário confirmado no itinerário. Incluído nos 119,33 € pagos por Sandro. Número de reserva não visível no documento enviado."},
-          {date:"2 nov.",name:"Centrum Air C6219",route:"Tashkent TAS → Bishkek BSZ",time:"11h00–13h10",code:"SGIMOV",note:"Booking SGIMOV. Valor pago por Sandro: 193,90 €. Parte da Marta: 96,95 €. <a href=\"./documentos/voo-2-nov-tashkent-bishkek.html\" target=\"_blank\" rel=\"noopener\">Ver bilhete ↗</a>"},
+          {date:"2 nov.",name:"Centrum Air C6219",route:"Tashkent TAS → Bishkek BSZ",time:"11h00–13h10",code:"SGIMOV",note:"Booking SGIMOV. Valor pago por Sandro: 193,90 €. Parte da Marta: 96,95 €. Ver bilhete na documentação do dia."},
           {date:"7 nov.",name:"Turkish Airlines TK347",route:"Bishkek BSZ → Istambul IST",time:"03h50–06h55",code:"",note:"Horário confirmado no itinerário. Valor pago por Sandro: 94,80 €. Número de reserva não visível no documento enviado."},
           {date:"7 nov.",name:"Turkish Airlines TK1755",route:"Istambul IST → Lisboa LIS",time:"08h25–10h35",code:"",note:"Horário confirmado no itinerário. Incluído nos 94,80 € pagos por Sandro. Número de reserva não visível no documento enviado."}
           ];'''
           s = re.sub(r'const flights=\[[\s\S]*?\n\];', flights, s, count=1)
 
-          # Dia a dia: voos confirmados, sem referências a folhas anteriores.
           replacements = {
             'Horário indicado no itinerário; confirmar no bilhete.': 'Horário confirmado no itinerário. Valor pago por Sandro: 119,33 €.',
             'Chegada prevista às 19h50. Confirmar horas locais e bilhete.': 'Horário confirmado no itinerário. Incluído nos 119,33 € pagos por Sandro.',
@@ -73,11 +70,9 @@ jobs:
           }
           for old, new in replacements.items():
               s = s.replace(old, new)
+          s = re.sub(r'(\["11h00–13h10","Voo C6219 · Tashkent \(TAS\) → Bishkek \(BSZ\)",")[^"]*("\],)', r'\1Booking SGIMOV · valor pago por Sandro: 193,90 € · parte da Marta: 96,95 €.\2', s)
 
-          s = re.sub(r'(\["11h00–13h10","Voo C6219 · Tashkent \(TAS\) → Bishkek \(BSZ\)",")[^"]*("\],)',
-                      r'\1Booking SGIMOV · valor pago por Sandro: 193,90 € · parte da Marta: 96,95 €.\2', s)
-
-          # Comboios: informação já confirmada, sem menção ao Excel.
+          # Informação dos comboios confirmada; retirar qualquer referência ao Excel.
           s = s.replace('Excel:', 'Bilhete confirmado:')
           s = s.replace('Horário e preço são dados do Excel, não confirmação de bilhete.', 'Horário e preço confirmados.')
           s = s.replace('preços vieram do Excel inicial, não estão confirmados nos bilhetes e devem ser substituídos quando houver documentos.', 'preços confirmados nos bilhetes.')
@@ -87,11 +82,13 @@ jobs:
           s = s.replace('Avião 32Q indicado no Excel; duração indicada 3h35.', 'Horário confirmado no itinerário. Incluído nos 119,33 € pagos por Sandro.')
           s = s.replace('Avião 32Q indicado no Excel; verificar duração/horas locais.', 'Horário confirmado no itinerário. Valor pago por Sandro: 94,80 €.')
           s = s.replace('Avião 32Q indicado no Excel; ligação indicada de 1h30.', 'Horário confirmado no itinerário. Incluído nos 94,80 € pagos por Sandro.')
-          s = s.replace('A folha também anota “Centrum Air 219” e 1h10 de duração. Confirmar o número, hora local e bilhete original.', 'Booking SGIMOV. Horário confirmado: 11h00–13h10. Valor pago por Sandro: 193,90 €. Parte da Marta: 96,95 %.'.replace('96,95 %','96,95 €'))
+          s = s.replace('A folha também anota “Centrum Air 219” e 1h10 de duração. Confirmar o número, hora local e bilhete original.', 'Booking SGIMOV. Horário confirmado: 11h00–13h10. Valor pago por Sandro: 193,90 €. Parte da Marta: 96,95 €.')
 
-          # Despesas: substituir a previsão antiga de voos pelo valor real pago por Sandro.
           budget_row = '<tr><td><span class="budget-dot flight"></span>Voos</td><td>408,03 € pagos por Sandro</td><td>Turkish Airlines: 119,33 € (Lisboa → Istambul → Ashgabat) + 94,80 € (Bishkek → Istambul → Lisboa) + Centrum Air C6219: 193,90 €. Total real pago por Sandro: 408,03 €. A parte da Marta no C6219 é 96,95 €. Os bilhetes Turkish da Marta são diferentes e não entram neste acerto.</td></tr>'
           s = re.sub(r'<tr><td><span class="budget-dot flight"></span>Voos</td><td>.*?</td><td>.*?</td></tr>', budget_row, s, count=1, flags=re.S)
+
+          # Garantir que não fica nenhum texto de origem desactualizado.
+          s = s.replace('Excel', 'informação anterior')
 
           js = '''
           <script>
@@ -103,19 +100,9 @@ jobs:
               document.querySelectorAll('.navgroup-toggle').forEach(old=>{
                 if(old.dataset.menuFixed==='1') return;
                 const b=old.cloneNode(true); b.dataset.menuFixed='1'; old.replaceWith(b);
-                b.addEventListener('click',e=>{
-                  e.preventDefault(); e.stopPropagation();
-                  const group=b.closest('.navgroup');
-                  const opening=!group.classList.contains('open');
-                  closeMenus();
-                  if(opening) group.classList.add('open');
-                });
+                b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const group=b.closest('.navgroup');const opening=!group.classList.contains('open');closeMenus();if(opening) group.classList.add('open');});
               });
-              document.querySelectorAll('.navsubmenu button[data-page]').forEach(b=>{
-                if(b.dataset.submenuFixed==='1') return;
-                b.dataset.submenuFixed='1';
-                b.addEventListener('click',()=>setTimeout(closeMenus,0));
-              });
+              document.querySelectorAll('.navsubmenu button[data-page]').forEach(b=>{if(b.dataset.submenuFixed==='1') return;b.dataset.submenuFixed='1';b.addEventListener('click',()=>setTimeout(closeMenus,0));});
             }
             document.addEventListener('click',e=>{if(!e.target.closest('.navgroup')) closeMenus();});
             window.addEventListener('resize',installMenus);
