@@ -54,6 +54,15 @@ jobs:
             s = s.replace(/<tr><td><span class="budget-dot flight"><\/span>Voos<\/td><td>[^<]*<\/td><td>.*?<\/td><\/tr>/,
               '<tr><td><span class="budget-dot flight"></span>Voos</td><td>408,03 € pagos por Sandro</td><td>Turkish Airlines: 119,33 € (Lisboa → Istambul → Ashgabat) + 94,80 € (Bishkek → Istambul → Lisboa) + Centrum Air C6219: 193,90 €. Total real pago por Sandro: 408,03 €. A parte da Marta no C6219 é 96,95 €. Os bilhetes Turkish da Marta são diferentes e não entram neste acerto.</td></tr>');
 
+            // Recomendações de restaurantes indicadas por amigos.
+            if (!s.includes('Recomendação de amigo')) {
+              const friendFood = `
+{city:"Tashkent",country:"Uzbequistão",name:"Bazar Restaurant",type:"Recomendação de amigo",why:"Recomendação de amigo para ir. O restaurante fica na Uqchi Street 3, junto ao Tashkent City; avaliações recentes destacam a comida e o ambiente.",dish:"Lagman, saladas e pratos uzbeques",maps:"Bazar Restaurant Uqchi Street 3 Tashkent",trip:"https://www.tripadvisor.com/Restaurants-g293968-Tashkent_Tashkent_Province.html"},
+{city:"Bukhara",country:"Uzbequistão",name:"JOY Gastro Restaurant",type:"Recomendação de amigo",why:"Recomendação de amigo para ir. Fica na Sarafon 2, no centro histórico; tem avaliações muito fortes e é conhecido pela cozinha uzbeque, ambiente e serviço.",dish:"Vaguri, lagman, samsa e pratos uzbeques",maps:"JOY Gastro Restaurant Sarafon 2 Bukhara",trip:"https://www.tripadvisor.com/Restaurant_Review-g303936-d25439623-Reviews-JOY_Chaikhana_Lounge-Bukhara_Bukhara_Province.html"},
+`;
+              s = s.replace('const foodPlaces=[', 'const foodPlaces=[' + friendFood);
+            }
+
             // Remover referências textuais residuais ao Excel em toda a aplicação.
             s = s.replace(/Excel/g, 'informação anterior');
             s = s.replace(/informação anterior: /g, 'Bilhete confirmado: ');
@@ -68,4 +77,4 @@ jobs:
             }
 
             const encoded = Buffer.from(s, 'utf8').toString('base64');
-            await github.rest.repos.createOrUpdateFileContents({owner: context.repo.owner, repo: context.repo.repo, path, message: 'Actualizar transportes despesas e dia a dia com informação confirmada', content: encoded, sha: data.sha, branch: 'main'});
+            await github.rest.repos.createOrUpdateFileContents({owner: context.repo.owner, repo: context.repo.repo, path, message: 'Actualizar transportes despesas e recomendações de restaurantes', content: encoded, sha: data.sha, branch: 'main'});
